@@ -407,6 +407,9 @@
 - 인물의 얼굴 생김새, 나이, 인종에 대한 묘사
 - 헤어스타일 (별도로 지정됨)
 
+의상 고정 문구 (반드시 프롬프트에 포함):
+The subject wears a plain white tank top (not cropped, fully covering the torso and stomach, no skin exposed at the midriff) and plain white shorts of moderate length (not too short, mid-thigh length). No other clothing details, logos, or accessories. This is a placeholder outfit only — keep it simple and modest.
+
 이미지 비율: ${ratio}
 `;
     if (hairPreset) {
