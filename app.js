@@ -393,6 +393,7 @@
     const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
 
     let p = `레퍼런스 이미지를 매우 꼼꼼하게 분석하세요. 배경의 모든 요소(벽, 창문, 식물, 바닥 등), 인물의 정확한 자세(양팔, 손, 손가락, 고개 각도, 시선), 카메라의 정확한 거리와 각도, 프레임이 신체의 정확히 어느 지점에서 시작하고 끝나는지를 빠짐없이 포착하세요. 색상을 제외한 모든 시각적 정보는 최대한 구체적으로 작성하세요.
+좌우 방향을 묘사할 때는 반드시 '카메라에서 바라봤을 때(viewer's perspective)' 기준으로 명확히 표기하세요. 예를 들어 인물이 카메라 기준 오른쪽을 바라보고 있다면 'the subject's head is turned toward the viewer's right'라고 명시하고, 인물 자신의 좌우와 혼동되지 않도록 매번 'from the viewer's perspective'를 표기하세요.
 
 Analyze the reference image with extreme precision and output the result using the exact section structure below.
 
@@ -410,14 +411,14 @@ OUTPUT FORMAT — reproduce these section headers exactly, in this order. Output
 (Write 2–3 short imperative sentences: single subject only; replicate the exact environment and atmosphere of the reference; minimal styling with no distracting elements.)
 
 [SCENE]
-(Describe the location, physical environment, and every structural or environmental element visible in the frame — walls, windows, plants, floor surfaces, furniture, etc. No colors or tones.)
+(Describe the location, physical environment, and every structural or environmental element visible in the frame — walls, windows, plants, floor surfaces, furniture, etc. No colors or tones. For each structural element (columns, frames, doors, windows, etc.), describe its shape, its position in the frame (e.g., far left edge, center background, right side), and its surface texture (e.g., wooden column, metal frame, concrete wall). If multiple structural elements are present, specify each one's position individually.)
 
 [CAMERA]
 Aspect ratio: ${ratio}.
-(Add: framing type, the exact body points where the top and bottom of the frame cut the subject, camera distance, shooting angle, and depth of field.)
+(Add: framing type, camera distance, shooting angle, and depth of field. For the top of the frame: state precisely where it cuts relative to the subject's head — e.g., slight space above the crown, crown slightly cropped, or frame starting at the forehead. If headroom is minimal, write "minimal to no headroom, frame nearly touches the top of the head." For the bottom of the frame: state exactly where it cuts on the body — e.g., mid-thigh, hip bone, waist. Never leave these crop points vague.)
 
 [SUBJECT ACTION]
-(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces, head tilt angle, facial expression, and exact gaze direction.)
+(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces (always from the viewer's perspective), head tilt angle, facial expression, and exact gaze direction. State whether the eyes are open or closed. Describe precisely whether and where the hand contacts the face — e.g., whether the hand supports the chin, rests near the lips, or is held away from the face without any contact. Never generalize as a "contemplative gesture"; always specify the exact contact point or explicit lack of contact between hand and face.)
 
 [PROPS]
 (If props are present in the reference: state the exact bag type category, handle/strap structure and count, how the prop is held or worn, its relative size in the frame, the exact finger positions gripping the handle or strap, the grip point on the handle, and the precise arm posture while holding it. No colors or materials. If no props are visible, write: None.)
