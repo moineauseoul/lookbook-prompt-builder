@@ -390,7 +390,9 @@
   });
 
   function buildBasePrompt(ratio, note, hairPreset) {
-    let p = `레퍼런스 이미지를 매우 정밀하게 관찰해서 묘사해주세요. 인물이 들고 있거나 착용한 소품(가방, 액세서리 등)이 있다면 그 소품의 위치와 들고 있는 방식(팔의 각도, 손의 위치)을 정확히 포함하세요. 포즈는 추상적으로 뭉뚱그리지 말고, 양팔의 정확한 위치, 손가락의 위치, 몸의 회전 각도, 시선의 정확한 방향을 구체적으로 묘사하세요.
+    let p = `CRITICAL CLOTHING REQUIREMENT — read this first: The subject MUST be wearing a plain white tank top that fully covers the chest, torso, and stomach with straps over both shoulders, plus plain white shorts of moderate mid-thigh length. The torso, chest, and stomach must NEVER be bare or exposed at any point, regardless of how the arms are positioned or crossed. If the pose description below involves crossed arms or arms near the chest, the white tank top must still be clearly visible underneath and covering the body completely. This clothing requirement overrides all other pose details.
+
+레퍼런스 이미지를 매우 정밀하게 관찰해서 묘사해주세요. 인물이 들고 있거나 착용한 소품(가방, 액세서리 등)이 있다면 그 소품의 위치와 들고 있는 방식(팔의 각도, 손의 위치)을 정확히 포함하세요. 포즈는 추상적으로 뭉뚱그리지 말고, 양팔의 정확한 위치, 손가락의 위치, 몸의 회전 각도, 시선의 정확한 방향을 구체적으로 묘사하세요.
 
 위 레퍼런스 이미지를 분석해서 AI 이미지 생성용 영문 프롬프트를 작성해주세요.
 
@@ -409,9 +411,6 @@
 - 인물의 얼굴 생김새, 나이, 인종에 대한 묘사
 - 헤어스타일 (별도로 지정됨)
 - 색상, 색감, 톤, 컬러 팔레트에 대한 모든 묘사 (배경색, 조명색, 전체 색조 등 포함) — 색상값은 별도로 지정되므로 절대 언급하지 말 것
-
-의상 고정 문구 (반드시 프롬프트에 포함):
-The subject wears a plain white tank top (not cropped, fully covering the torso and stomach, no skin exposed at the midriff) and plain white shorts of moderate length (not too short, mid-thigh length). No other clothing details, logos, or accessories. This is a placeholder outfit only — keep it simple and modest.
 
 이미지 비율: ${ratio}
 `;
