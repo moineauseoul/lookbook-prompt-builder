@@ -100,7 +100,7 @@
 
   /* upload zone */
   .upload-zone{
-    border:1.5px dashed var(--border); border-radius:10px; padding:1.6rem 1rem; text-align:center;
+    display:block; border:1.5px dashed var(--border); border-radius:10px; padding:1.6rem 1rem; text-align:center;
     cursor:pointer; transition:all .2s; position:relative; background:var(--surface2);
   }
   .upload-zone:hover,.upload-zone.drag{ border-color:var(--accent); background:var(--accent-dim); }
@@ -287,7 +287,7 @@
     <div class="card">
       <div class="card-title">레퍼런스 이미지</div>
       <div class="card-desc">배경과 포즈가 마음에 드는 레퍼런스 사진을 업로드하세요. 배경, 포즈, 표정, 시선, 카메라 구도, 프레이밍, 실루엣 비율, 크롭 위치만 분석합니다.</div>
-      <label class="upload-zone" id="base-zone" for="base-file">
+      <label class="upload-zone" id="base-zone">
         <input type="file" id="base-file" accept="image/*">
         <div id="base-zone-empty">
           <div class="ic">🖼️</div>
