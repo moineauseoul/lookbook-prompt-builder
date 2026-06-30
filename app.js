@@ -419,6 +419,14 @@ For example, if the saved hairstyle is a low bun, forbid ponytails, hanging tail
 ${hairPreset.desc}`
       : `Extract the hairstyle from the reference image as a locked styling element.
 Include structure, parting, volume, texture, tied/untied shape, and negative constraints that prevent likely wrong interpretations.`;
+    const fixedOutfit = `Ignore the reference outfit.
+Always dress the subject in a fixed ivory look:
+- Ivory long-sleeve shirt.
+- Clean shirt collar and simple shirt placket may be visible when the crop includes the neck.
+- Sleeves must be full length and cover the wrists unless hands are visible.
+- Ivory shorts with a clean minimal silhouette.
+- No sweater, no knit pullover, no cardigan, no tank top, no trousers, no skirt, no dress.
+- No logos, jewelry, belts, scarves, or extra accessories.`;
 
     let p = `You are not writing a caption.
 You are reverse-engineering the reference image into an image-generation design blueprint.
@@ -435,9 +443,10 @@ Do not mention your analysis process.
 CRITICAL PRIORITY ORDER:
 1. Preserve the creative direction, emotion, and story moment.
 2. Preserve the locked hairstyle exactly.
-3. Preserve the outfit, bag, bag color, bag scale, and how the bag is held.
-4. Preserve camera framing, subject direction, gaze, and pose.
-5. Preserve the scene, lighting, color language, and textures.
+3. Force the fixed ivory long-sleeve shirt and ivory shorts outfit, regardless of the reference outfit.
+4. Preserve the bag, bag color, bag scale, and how the bag is held.
+5. Preserve camera framing, subject direction, gaze, and pose.
+6. Preserve the scene, lighting, color language, and textures.
 
 LEFT/RIGHT RULE:
 Use image left and image right from the viewer's perspective.
@@ -450,8 +459,13 @@ REFERENCE EXTRACTION RULES:
 - Do not over-inventory the background. Describe only the scene elements that shape the mood or composition.
 - Do not replace the photographed moment with a generic product pose.
 - If the subject is looking down, away, or toward the bag, state that clearly.
-- If the bag is held close, hugged, supported, gripped, or resting against the body, state the exact relationship.
-- If a hand is near the face or bag, verify the actual contact point. Do not invent chin/lip contact.
+- The bag must remain visually important and close to the torso. Preserve it as a substantial body-held object, not a small accessory.
+- Describe the bag as occupying roughly 35-45% of the frame width when the reference composition supports a tight portrait.
+- If the bag is held close, hugged, supported, gripped, or resting against the body, state the exact relationship and make both arms support or cradle it.
+- Hand-to-face gestures are prohibited unless the reference unmistakably shows actual contact with the mouth, lips, or chin.
+- If the hand position is ambiguous, choose bag contact over face contact.
+- Do not write "hand near mouth", "knuckles near lips", "fingers touching chin", or "contemplative hand-to-face gesture" unless the hand clearly touches the face in the reference.
+- Prefer hands and forearms supporting, hugging, gripping, resting over, or wrapping around the bag.
 - Avoid approximate numbers unless a numeric angle is genuinely useful. Prefer plain precise language over fake precision.
 - Do not describe facial features, ethnicity, or age.
 - Use negative locks for common generation failures, especially hairstyle, bag scale, pose, gaze, and framing.
@@ -470,12 +484,14 @@ Include "Single female subject only."
 ${hairSection}
 
 [OUTFIT]
-Describe the visible outfit silhouette, layering, fit, volume, garment length, material texture, and colors.
-Do not invent logos, jewelry, or extra styling.
+${fixedOutfit}
 
 [BAG]
-If a bag is visible, describe the exact bag category, color, material finish, silhouette, handle/strap structure, size in the frame, and how it is held against the body.
-Include hand placement and support points only when visible.
+If a bag is visible, describe the exact bag category, color, material finish, silhouette, handle/strap structure, and how it is held against the body.
+Make the bag large enough to read as a key object in the image, not a small purse.
+Preserve a substantial torso-held scale: the bag should cover a clear central area of the torso and occupy about 35-45% of the frame width in tight portraits.
+Describe the bag as hugged, cradled, supported from below, or held close to the chest/waist when the reference supports that relationship.
+Include hand placement and support points only when visible or when needed to prevent hand-to-face drift.
 If no bag is visible, write: None.
 
 [SCENE]
@@ -490,6 +506,8 @@ Describe framing, crop points, distance, lens feeling, angle, depth of field, su
 [SUBJECT ACTION]
 Describe the story moment, body direction, head tilt, gaze direction, expression, shoulders, arms, hands, and the subject's relationship to the bag.
 Make the pose feel motivated, not mechanical.
+Keep hands away from the mouth, lips, and chin unless the reference unmistakably shows contact.
+When in doubt, place both hands/forearms on the bag: one supporting from below and one resting over or around the handle/body.
 
 [LIGHTING]
 Describe light source, direction, softness, shadow contrast, highlights, and time-of-day feeling when visible.
@@ -502,6 +520,9 @@ Explain the color harmony briefly through prompt lines.
 [NEGATIVE LOCKS]
 List what must not change.
 Include hairstyle failures, wrong bag size/color/handling, wrong gaze, wrong pose, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
+Always include: no hand near mouth, no fingers touching lips, no chin-touch pose, no contemplative hand-to-face gesture.
+Always include: do not shrink the bag, do not make it a small clutch, do not let it dangle from the handle, do not crop it out.
+Always include: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
 `;
     if (note) {
       p += `\nAdditional direction: ${note}\n`;
@@ -636,6 +657,7 @@ Include hairstyle failures, wrong bag size/color/handling, wrong gaze, wrong pos
   function buildSeriesPrompt(selectedCuts) {
     const hairPreset = presets.find((p) => p.id === confirmedBase.hairPresetId);
     const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
+    const fixedOutfit = 'Ivory long-sleeve shirt and ivory shorts only. No sweater, no knit pullover, no cardigan, no tank top, no trousers, no skirt, no dress, no logos, no jewelry, no extra accessories.';
     const cutListText = selectedCuts.map((c, i) => `${i + 1}. ${c.name} (aspect ratio ${c.ratio})`).join('\n');
 
     return `Below is the confirmed base blueprint for a lookbook image:
@@ -653,8 +675,8 @@ Keep the quiet story moment, color language, texture, bag identity, outfit ident
 FIXED ACROSS ALL CUTS:
 - [MASTER DIRECTION]: preserve the base creative direction, emotion, and story moment.
 - [HAIR]: use this exact fixed hairstyle and negative locks: "${hairSection}"
-- [OUTFIT]: preserve the base outfit identity, color, material, layering, silhouette, and level of styling.
-- [BAG]: preserve the base bag identity, color, material finish, scale logic, and the feeling of how it is held or carried unless a cut is explicitly about no bag.
+- [OUTFIT]: always use this fixed outfit: "${fixedOutfit}"
+- [BAG]: preserve the base bag identity, color, material finish, substantial torso-held scale, and the feeling of how it is cradled or supported unless a cut is explicitly about no bag.
 - [SCENE]: preserve the same location, atmosphere, color relationship, and mood-setting architectural/background elements.
 - [LIGHTING]: preserve the same light source, softness, direction, contrast, and time-of-day feeling.
 - [COLOR & TEXTURE]: preserve the base palette relationship and tactile qualities.
@@ -662,8 +684,8 @@ FIXED ACROSS ALL CUTS:
 
 VARIABLE PER CUT:
 - [CAMERA]: change framing, crop, distance, angle, subject placement, and depth of field to match the cut name. Always begin with "Aspect ratio: X:X."
-- [SUBJECT ACTION]: change body direction, gaze, hand/arm placement, and bag interaction to match the cut name while staying natural and motivated.
-- [BAG]: if the cut changes how the bag appears, describe the new grip/support/wear relationship precisely while preserving bag identity and scale logic.
+- [SUBJECT ACTION]: change body direction, gaze, hand/arm placement, and bag interaction to match the cut name while staying natural and motivated. Keep hands away from mouth, lips, and chin unless the base explicitly requires face contact.
+- [BAG]: if the cut changes how the bag appears, describe the new grip/support/wear relationship precisely while preserving bag identity and substantial torso-held scale.
 
 RULES:
 - Use the exact section structure below for every cut:
@@ -672,6 +694,9 @@ RULES:
 - Use short prompt lines.
 - Do not mention facial features, ethnicity, or age.
 - Do not add jewelry, extra accessories, extra furniture, extra people, logos, or editorial exaggeration unless present in the base.
+- Do not create hand-to-face gestures, fingers touching lips, chin-touch poses, or a contemplative hand near the mouth.
+- Do not shrink the bag into a small purse or clutch. Keep it visibly important and close to the body.
+- Do not change the fixed ivory long-sleeve shirt and ivory shorts outfit.
 - Use image left/image right from the viewer's perspective when describing direction.
 
 컷 리스트:
