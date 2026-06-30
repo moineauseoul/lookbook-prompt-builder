@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lookbook Prompt Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --bg:#ffffff; --surface:#ffffff; --surface2:#f7f7f7; --border:#e8e8e8;
+    --text:#111111; --muted:#999999; --accent:#111111; --accent-dim:rgba(0,0,0,.04);
+    --radius:8px;
+  }
+  body{
+    font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--bg); color:var(--text); min-height:100vh;
+  }
+  .container{ max-width:1180px; margin:0 auto; padding:0 24px 80px; }
+
+  /* header */
+  header{
+    display:flex; align-items:center; gap:14px;
+    padding:22px 24px; border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:#fff; z-index:50;
+    flex-wrap:wrap;
+  }
+  header h1{ font-size:1.05rem; font-weight:800; letter-spacing:-.02em; }
+  header p{ font-size:.78rem; color:var(--muted); }
+  .header-spacer{ flex:1; }
+  .header-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:7px 14px; border:1.5px solid var(--border); border-radius:var(--radius);
+    background:#fff; font-size:.8rem; font-weight:500; cursor:pointer;
+    font-family:inherit; color:var(--text); transition:border-color .15s,background .15s;
+  }
+  .header-btn:hover{ border-color:var(--accent); background:var(--accent-dim); }
+
+  /* stepper */
+  .stepper{
+    display:flex; align-items:center; gap:0; margin:28px 0 24px;
+    border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+  }
+  .step-tab{
+    flex:1; text-align:center; padding:13px 8px; font-size:.82rem; font-weight:600;
+    color:var(--muted); background:#fff; cursor:pointer; border-right:1px solid var(--border);
+    transition:background .15s,color .15s; position:relative;
+  }
+  .step-tab:last-child{ border-right:none; }
+  .step-tab .num{
+    display:inline-block; width:18px; height:18px; line-height:18px; border-radius:50%;
+    background:var(--surface2); color:var(--muted); font-size:.68rem; margin-right:6px;
+  }
+  .step-tab.active{ background:var(--text); color:#fff; }
+  .step-tab.active .num{ background:#fff; color:var(--text); }
+  .step-tab.done{ color:var(--text); }
+  .step-tab.done .num{ background:var(--text); color:#fff; }
+  .step-tab:hover:not(.active){ background:var(--surface2); }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  /* cards */
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:1.5rem 1.7rem; margin-bottom:1rem;
+  }
+  .card-title{ font-size:.95rem; font-weight:700; margin-bottom:.3rem; }
+  .card-desc{ font-size:.8rem; color:var(--muted); margin-bottom:1.1rem; line-height:1.6; }
+  .label{
+    font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted); margin-bottom:.6rem; display:block;
+  }
+
+  /* preset grid */
+  .preset-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:.8rem; }
+  .preset-card{
+    border:1.5px solid var(--border); border-radius:10px; padding:.7rem; cursor:pointer;
+    transition:border-color .15s,background .15s; position:relative; background:#fff;
+  }
+  .preset-card:hover{ border-color:#ccc; }
+  .preset-card.selected{ border-color:var(--accent); background:var(--accent-dim); }
+  .preset-thumbs{ display:flex; gap:4px; margin-bottom:.5rem; }
+  .preset-thumbs img{ width:50%; aspect-ratio:3/4; object-fit:cover; border-radius:5px; background:var(--surface2); }
+  .preset-name{ font-size:.78rem; font-weight:600; text-align:center; }
+  .preset-del{
+    position:absolute; top:4px; right:4px; width:18px; height:18px; border-radius:50%;
+    background:rgba(0,0,0,.6); color:#fff; border:none; font-size:.6rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .15s;
+  }
+  .preset-card:hover .preset-del{ opacity:1; }
+  .preset-add{
+    border:1.5px dashed var(--border); border-radius:10px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:6px; cursor:pointer; min-height:118px;
+    color:var(--muted); font-size:.78rem; transition:border-color .15s,background .15s;
+  }
+  .preset-add:hover{ border-color:var(--accent); background:var(--accent-dim); color:var(--text); }
+
+  /* upload zone */
+  .upload-zone{
+    border:1.5px dashed var(--border); border-radius:10px; padding:1.6rem 1rem; text-align:center;
+    cursor:pointer; transition:all .2s; position:relative; background:var(--surface2);
+  }
+  .upload-zone:hover,.upload-zone.drag{ border-color:var(--accent); background:var(--accent-dim); }
+  .upload-zone input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .upload-zone .ic{ font-size:1.4rem; margin-bottom:.4rem; }
+  .upload-zone h4{ font-size:.82rem; font-weight:600; margin-bottom:.2rem; }
+  .upload-zone p{ font-size:.72rem; color:var(--muted); }
+  .upload-zone img.preview{
+    width:100%; max-height:180px; object-fit:contain; border-radius:8px; margin-bottom:.5rem;
+  }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:760px){ .two-col{ grid-template-columns:1fr; } }
+
+  /* inputs */
+  input[type=text],input[type=password],textarea,select{
+    width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius);
+    padding:.62rem .85rem; font-size:.85rem; color:var(--text); outline:none; font-family:inherit;
+    transition:border-color .15s; resize:vertical;
+  }
+  input:focus,textarea:focus,select:focus{ border-color:var(--accent); }
+  textarea{ min-height:84px; line-height:1.6; }
+
+  /* buttons */
+  button{ cursor:pointer; border:none; border-radius:var(--radius); font-family:inherit; transition:all .15s; }
+  .btn-primary{
+    background:var(--accent); color:#fff; padding:.78rem 1.7rem; font-size:.88rem; font-weight:700;
+    border-radius:var(--radius); display:inline-flex; align-items:center; gap:.5rem;
+  }
+  .btn-primary:hover:not(:disabled){ background:#333; }
+  .btn-primary:disabled{ opacity:.35; cursor:not-allowed; }
+  .btn-ghost{
+    background:var(--surface2); color:var(--text); padding:.6rem 1.1rem; font-size:.82rem;
+    font-weight:500; border:1px solid var(--border);
+  }
+  .btn-ghost:hover{ border-color:#bbb; }
+  .btn-small{ padding:.4rem .8rem; font-size:.74rem; }
+
+  /* chips */
+  .chip-group{ display:flex; flex-wrap:wrap; gap:.5rem; }
+  .chip{
+    padding:.5rem .95rem; border:1.5px solid var(--border); border-radius:100px; background:#fff;
+    font-size:.8rem; font-weight:500; cursor:pointer; transition:all .15s; color:var(--text);
+  }
+  .chip:hover{ border-color:#bbb; }
+  .chip.active{ background:var(--text); border-color:var(--text); color:#fff; }
+
+  /* aspect ratio chip */
+  .ratio-chip{ display:flex; align-items:center; gap:.4rem; }
+  .ratio-box{ border:1.5px solid currentColor; border-radius:2px; }
+
+  /* cut list */
+  .cut-row{
+    display:flex; align-items:center; gap:.7rem; padding:.7rem .9rem; border:1px solid var(--border);
+    border-radius:var(--radius); margin-bottom:.5rem; background:#fff;
+  }
+  .cut-row input[type=checkbox]{ width:16px; height:16px; accent-color:var(--accent); flex-shrink:0; }
+  .cut-row .cut-name{ font-size:.84rem; font-weight:600; flex:1; }
+  .cut-row .cut-meta{ font-size:.72rem; color:var(--muted); white-space:nowrap; }
+  .cut-row.custom{ background:var(--surface2); }
+  .cut-row .rm-cut{
+    width:20px; height:20px; border-radius:50%; border:none; background:none; color:var(--muted);
+    font-size:.8rem; cursor:pointer; flex-shrink:0;
+  }
+  .cut-row .rm-cut:hover{ color:#dc2626; }
+
+  .add-cut-row{ display:flex; gap:.5rem; margin-top:.7rem; }
+  .add-cut-row input{ flex:1; }
+
+  /* result blocks */
+  .result-block{
+    border:1px solid var(--border); border-radius:10px; padding:1rem 1.1rem; margin-bottom:.8rem;
+    background:var(--surface2);
+  }
+  .result-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:.6rem; gap:.6rem; flex-wrap:wrap; }
+  .result-title{ font-size:.85rem; font-weight:700; }
+  .result-badges{ display:flex; gap:.4rem; flex-wrap:wrap; }
+  .badge{
+    font-size:.66rem; font-weight:600; padding:.2rem .55rem; border-radius:100px;
+    background:#fff; border:1px solid var(--border); color:var(--muted);
+  }
+  .result-text{
+    width:100%; background:#fff; border:1px solid var(--border); border-radius:6px; padding:.7rem .85rem;
+    font-size:.8rem; line-height:1.65; color:var(--text); white-space:pre-wrap; font-family:inherit;
+    resize:vertical; min-height:90px;
+  }
+  .result-actions{ display:flex; justify-content:flex-end; gap:.4rem; margin-top:.5rem; }
+  .copy-toast{ font-size:.74rem; color:#16a34a; opacity:0; transition:opacity .25s; }
+  .copy-toast.show{ opacity:1; }
+
+  /* loading */
+  .loading-row{ display:flex; align-items:center; gap:.7rem; padding:1.4rem; color:var(--muted); font-size:.85rem; }
+  .spinner{
+    width:18px; height:18px; border:2px solid var(--border); border-top-color:var(--accent);
+    border-radius:50%; animation:spin .75s linear infinite; flex-shrink:0;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .error-box{
+    background:#fff5f5; border:1px solid #fecaca; border-radius:8px; padding:.8rem 1rem;
+    color:#dc2626; font-size:.82rem;
+  }
+
+  .hint{ font-size:.74rem; color:var(--muted); line-height:1.6; }
+  .row-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:.7rem; gap:.6rem; }
+  .row-head .label{ margin-bottom:0; }
+
+  .api-body{
+    display:none; overflow:hidden; max-height:0; transition:max-height .25s ease, margin-top .25s ease;
+  }
+  .api-body.open{ display:block; max-height:300px; margin-top:1rem; }
+  .api-key-status{ display:flex; align-items:center; gap:5px; font-size:.72rem; margin-top:.4rem; color:var(--muted); }
+  .status-dot{ width:6px; height:6px; border-radius:50%; background:var(--border); }
+  .status-dot.saved{ background:#16a34a; }
+
+  .base-summary{
+    border:1px solid var(--border); border-radius:10px; padding:1rem 1.1rem; background:var(--surface2);
+    margin-bottom:1rem; font-size:.8rem; line-height:1.7; color:#444;
+  }
+  .base-summary b{ color:var(--text); }
+
+  .empty-state{ text-align:center; padding:2.4rem 1rem; color:var(--muted); font-size:.84rem; line-height:1.8; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Lookbook Prompt Builder</h1>
+  <p>레퍼런스 이미지로 룩북 베이스컷 프롬프트를 추출하고, 같은 분위기로 다양한 컷 시리즈를 생성합니다</p>
+  <div class="header-spacer"></div>
+  <button class="header-btn" id="api-toggle-btn">⚙ API 설정</button>
+</header>
+
+<div class="container">
+
+  <!-- API settings -->
+  <div class="card" id="api-card" style="display:none;">
+    <div class="row-head"><span class="label">API 설정</span></div>
+    <div class="two-col">
+      <div>
+        <label class="hint" style="display:block;margin-bottom:.4rem;">제공자</label>
+        <select id="api-provider">
+          <option value="claude">Claude</option>
+          <option value="openai">OpenAI</option>
+        </select>
+      </div>
+      <div>
+        <label class="hint" style="display:block;margin-bottom:.4rem;">모델</label>
+        <select id="api-model"></select>
+      </div>
+    </div>
+    <div style="margin-top:.8rem;">
+      <input type="password" id="api-key" placeholder="API 키 입력" autocomplete="off">
+      <div class="api-key-status"><span class="status-dot" id="key-dot"></span><span id="key-status">미입력</span></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.8rem;">
+      <button class="btn-ghost btn-small" id="save-key-btn">저장</button>
+    </div>
+  </div>
+
+  <!-- stepper -->
+  <div class="stepper">
+    <div class="step-tab active" data-step="preset"><span class="num">1</span>헤어 프리셋</div>
+    <div class="step-tab" data-step="base"><span class="num">2</span>베이스컷 추출</div>
+    <div class="step-tab" data-step="series"><span class="num">3</span>시리즈 생성</div>
+  </div>
+
+  <!-- STEP 1: hair presets -->
+  <div class="panel active" id="panel-preset">
+    <div class="card">
+      <div class="card-title">헤어스타일 프리셋</div>
+      <div class="card-desc">소울로 학습된 모델별 정면/측면 사진을 등록해두면, 베이스컷과 시리즈 전체에서 동일한 헤어스타일 설명이 일관되게 적용됩니다.</div>
+      <div class="preset-grid" id="preset-grid">
+        <div class="preset-add" id="preset-add-btn">
+          <span style="font-size:1.3rem;">+</span>
+          <span>프리셋 추가</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: base cut -->
+  <div class="panel" id="panel-base">
+    <div class="card">
+      <div class="card-title">레퍼런스 이미지</div>
+      <div class="card-desc">배경과 포즈가 마음에 드는 레퍼런스 사진을 업로드하세요. 배경, 포즈, 표정, 시선, 카메라 구도, 프레이밍, 실루엣 비율, 크롭 위치만 분석합니다.</div>
+      <label class="upload-zone" id="base-zone" for="base-file">
+        <input type="file" id="base-file" accept="image/*">
+        <div id="base-zone-empty">
+          <div class="ic">🖼️</div>
+          <h4>클릭 또는 드래그로 레퍼런스 이미지 업로드</h4>
+          <p>JPG · PNG · WebP</p>
+        </div>
+        <img class="preview" id="base-preview" style="display:none;">
+      </label>
+    </div>
+
+    <div class="card">
+      <div class="two-col">
+        <div>
+          <span class="label">헤어스타일 프리셋</span>
+          <select id="base-hair-select"><option value="">선택 안 함</option></select>
+        </div>
+        <div>
+          <span class="label">비율</span>
+          <div class="chip-group" id="base-ratio-group">
+            <button class="chip active" data-value="3:4">세로 3:4</button>
+            <button class="chip" data-value="4:3">가로 4:3</button>
+            <button class="chip" data-value="9:16">세로 9:16</button>
+            <button class="chip" data-value="1:1">정방 1:1</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;">
+        <span class="label">추가 메모 <span style="font-weight:400;color:var(--muted);">(선택)</span></span>
+        <textarea id="base-note" placeholder="예: 모래사장 위, 노을빛, 잔잔한 무드 강조해줘"></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:1rem;">
+        <button class="btn-primary" id="extract-base-btn" disabled>✨ 베이스컷 프롬프트 추출</button>
+      </div>
+    </div>
+
+    <div id="base-loading" class="card" style="display:none;">
+      <div class="loading-row"><div class="spinner"></div><span>레퍼런스 이미지를 분석하는 중입니다…</span></div>
+    </div>
+    <div id="base-error" class="card" style="display:none;"><div class="error-box" id="base-error-msg"></div></div>
+
+    <div id="base-result-wrap" style="display:none;">
+      <div class="card">
+        <div class="row-head">
+          <span class="label" style="margin-bottom:0;">베이스컷 프롬프트</span>
+          <div style="display:flex;gap:.5rem;align-items:center;">
+            <span class="copy-toast" id="base-copy-toast">복사됨 ✓</span>
+            <button class="btn-ghost btn-small" id="base-copy-btn">복사</button>
+          </div>
+        </div>
+        <textarea class="result-text" id="base-result-text" style="min-height:160px;"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:.8rem;">
+          <button class="btn-primary" id="confirm-base-btn">이 베이스컷으로 시리즈 만들기 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: series -->
+  <div class="panel" id="panel-series">
+    <div id="series-empty" class="card">
+      <div class="empty-state">아직 확정된 베이스컷이 없어요.<br>2단계에서 베이스컷 프롬프트를 먼저 추출하고 확정해주세요.</div>
+    </div>
+
+    <div id="series-content" style="display:none;">
+      <div class="card">
+        <div class="card-title">베이스 컨셉</div>
+        <div class="base-summary" id="series-base-summary"></div>
+        <button class="btn-ghost btn-small" id="edit-base-btn">← 베이스컷 다시 수정</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">컷 구성</div>
+        <div class="card-desc">같은 배경과 분위기를 유지하면서 만들 컷들을 선택하거나 직접 추가하세요. 각 컷마다 프레이밍/포즈/비율을 따로 지정할 수 있습니다.</div>
+        <div id="cut-list"></div>
+        <div class="add-cut-row">
+          <input type="text" id="new-cut-name" placeholder="예: 가방 히어로컷, 뒷모습 상반신 타이트컷...">
+          <button class="btn-ghost btn-small" id="add-cut-btn">+ 추가</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+        <button class="btn-primary" id="generate-series-btn">✨ 선택한 컷 프롬프트 일괄 생성</button>
+      </div>
+
+      <div id="series-loading" class="card" style="display:none;">
+        <div class="loading-row"><div class="spinner"></div><span>시리즈 프롬프트를 생성하는 중입니다…</span></div>
+      </div>
+      <div id="series-error" class="card" style="display:none;"><div class="error-box" id="series-error-msg"></div></div>
+
+      <div id="series-results"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
