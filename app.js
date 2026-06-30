@@ -390,44 +390,52 @@
   });
 
   function buildBasePrompt(ratio, note, hairPreset) {
-    let p = `CRITICAL CLOTHING REQUIREMENT — read this first: The subject MUST be wearing a plain white tank top that fully covers the chest, torso, and stomach with straps over both shoulders, plus plain white shorts of moderate mid-thigh length. The torso, chest, and stomach must NEVER be bare or exposed at any point, regardless of how the arms are positioned or crossed. If the pose description below involves crossed arms or arms near the chest, the white tank top must still be clearly visible underneath and covering the body completely. This clothing requirement overrides all other pose details.
+    const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
 
-레퍼런스 이미지를 매우 정밀하게 관찰해서 묘사해주세요. 인물이 들고 있거나 착용한 소품(가방, 액세서리 등)이 있다면 그 소품의 위치와 들고 있는 방식(팔의 각도, 손의 위치)을 정확히 포함하세요. 포즈는 추상적으로 뭉뚱그리지 말고, 양팔의 정확한 위치, 손가락의 위치, 몸의 회전 각도, 시선의 정확한 방향을 구체적으로 묘사하세요.
+    let p = `Analyze the reference image with extreme precision and output the result using the exact section structure below.
 
-모든 수치 표현(각도, 비율, 위치)은 가능한 한 구체적이고 단정적으로 작성하세요. 'approximately', 'roughly' 같은 모호한 표현은 최소화하고, 레퍼런스 이미지를 보고 확신할 수 있는 만큼 정확하게 묘사하세요.
+ANALYSIS RULES (apply to every section without exception):
+- Use short, imperative English sentences. One sentence per line within each section.
+- No color, tone, color palette, or color temperature descriptions anywhere — not in scene, not in lighting, not anywhere. The only permitted color reference is the fixed white clothing in [CLOTHING].
+- No facial features, ethnicity, or age descriptions.
+- No clothing descriptions outside of [CLOTHING].
+- No hair descriptions outside of [HAIR].
+- All positional and angular values must be stated with maximum precision. Never use "approximately" or "roughly."
+- For props (bags, accessories): always state the exact bag type category (e.g. shoulder bag, tote bag, clutch, crossbody bag), the handle/strap structure and count (top handle only, shoulder strap only, or both), how it is held or worn, and its relative size in the frame. Never write "medium-sized bag" or any other vague size descriptor.
 
-위 레퍼런스 이미지를 분석해서 AI 이미지 생성용 영문 프롬프트를 작성해주세요.
+OUTPUT FORMAT — reproduce these section headers exactly, in this order. Output nothing outside the sections:
 
-다음 항목만 포함하세요:
-- 배경 (장소, 환경, 시간대, 빛의 느낌)
-- 인물의 포즈 (자세, 손/팔의 위치, 몸의 방향 — 양팔·손가락·몸의 회전 각도를 구체적으로)
-- 인물의 표정
-- 인물의 시선 방향
-- 카메라 구도 (앵글, 거리감)
-- 프레이밍과 크롭 위치 (인물의 어느 부위에서 잘리는지)
-- 실루엣 비율 (인물이 프레임 내에서 차지하는 비중)
-- 인물이 들고 있거나 착용한 소품(가방 등)의 위치와 들고 있는 방식 (단, 소품 자체의 색상/소재는 언급하지 말고 위치와 동작만)
-  소품(가방 등)을 묘사할 때는 다음을 반드시 구체적으로 포함하세요:
-  · 가방의 형태 카테고리 (예: shoulder bag, tote bag, clutch, crossbody bag 등 정확한 타입 명시)
-  · 손잡이/스트랩의 형태와 개수 (top handle 1개인지, shoulder strap인지, 둘 다 있는지)
-  · 가방이 프레임 내에서 차지하는 대략적인 크기 비율
-  이 소품 형태 묘사는 절대 모호하게 'medium-sized bag'처럼 뭉뚱그리지 말고, 레퍼런스 이미지에 보이는 정확한 형태를 그대로 재현할 수 있도록 상세히 작성하세요.
+[MASTER DIRECTION]
+(Write 2–3 short imperative sentences: single subject only; replicate the exact environment and atmosphere of the reference; minimal styling with no distracting elements.)
 
-다음은 절대 포함하지 마세요:
-- 의류/제품에 대한 묘사 (옷 색상, 디자인, 소재 등)
-- 인물의 얼굴 생김새, 나이, 인종에 대한 묘사
-- 헤어스타일 (별도로 지정됨)
-- 색상, 색감, 톤, 컬러 팔레트에 대한 모든 묘사 (배경색, 조명색, 전체 색조 등 포함) — 색상값은 별도로 지정되므로 절대 언급하지 말 것
+[SCENE]
+(Describe the location, physical environment, and structural or environmental elements visible in the frame. No colors or tones.)
 
-이미지 비율: ${ratio}
+[CAMERA]
+Aspect ratio: ${ratio}.
+(Add: framing type, where the top and bottom of the frame cut the subject, camera distance, shooting angle, and depth of field.)
+
+[SUBJECT ACTION]
+(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces, facial expression, and exact gaze direction.)
+
+[PROPS]
+(If props are present in the reference: state the exact bag type category, handle/strap structure and count, how the prop is held or worn, and its relative size in the frame. No colors or materials. If no props are visible, write: None.)
+
+[CLOTHING]
+Subject wears a plain white tank top fully covering the chest, torso, and stomach, with straps over both shoulders.
+Subject wears plain white shorts of moderate mid-thigh length.
+No skin exposed at the midriff under any arm position.
+No logos, patterns, or accessories.
+
+[HAIR]
+${hairSection}
+
+[LIGHTING]
+(Describe the direction and quality of light only — e.g., front-facing diffused light, side rim light, harsh overhead sunlight. No color temperature or color descriptions.)
 `;
-    if (hairPreset) {
-      p += `\n인물의 헤어스타일은 다음과 같이 고정해서 프롬프트에 포함해주세요: ${hairPreset.desc}\n`;
-    }
     if (note) {
-      p += `\n추가 요청사항: ${note}\n`;
+      p += `\nAdditional direction: ${note}\n`;
     }
-    p += `\n마크다운 없이, 영문 프롬프트 문단만 출력하세요. (이미지 비율 표기는 "Aspect ratio: ${ratio}" 형태로 마지막 줄에 포함)`;
     return p;
   }
 
@@ -557,27 +565,43 @@
 
   function buildSeriesPrompt(selectedCuts) {
     const hairPreset = presets.find((p) => p.id === confirmedBase.hairPresetId);
-    const cutListText = selectedCuts.map((c, i) => `${i + 1}. ${c.name} (비율 ${c.ratio})`).join('\n');
+    const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
+    const cutListText = selectedCuts.map((c, i) => `${i + 1}. ${c.name} (aspect ratio ${c.ratio})`).join('\n');
 
-    return `아래는 룩북 촬영의 베이스 컨셉(배경/분위기) 프롬프트입니다:
+    return `Below is the confirmed base concept prompt for a lookbook shoot, already structured in sections:
 
 """
 ${confirmedBase.text}
 """
 
-${hairPreset ? `인물의 헤어스타일은 항상 다음과 같이 고정해주세요: ${hairPreset.desc}\n` : ''}
+Generate individual cut prompts for the cuts listed below. Each cut prompt MUST use the exact same section structure as the base ([MASTER DIRECTION], [SCENE], [CAMERA], [SUBJECT ACTION], [PROPS], [CLOTHING], [HAIR], [LIGHTING]).
 
-위 베이스 컨셉과 동일한 배경, 동일한 조명, 동일한 무드/톤을 유지하면서, 아래 컷 리스트 각각에 대해 영문 프롬프트를 작성해주세요. 각 컷마다 포즈, 카메라 구도, 프레이밍, 크롭 위치, 실루엣 비율은 컷의 목적에 맞게 다르게 구성하되, 배경/분위기/조명/헤어는 절대 바뀌지 않아야 합니다.
+FIXED ACROSS ALL CUTS — copy these sections verbatim from the base, do not alter them:
+- [MASTER DIRECTION]: identical to the base.
+- [SCENE]: identical to the base.
+- [LIGHTING]: identical to the base.
+- [CLOTHING]: always — "Subject wears a plain white tank top fully covering the chest, torso, and stomach, with straps over both shoulders. Subject wears plain white shorts of moderate mid-thigh length. No skin exposed at the midriff under any arm position. No logos, patterns, or accessories."
+- [HAIR]: always — "${hairSection}"
+
+VARIABLE PER CUT — generate new content for each cut to match its purpose:
+- [CAMERA]: adjust framing type, crop position, camera distance, angle, and depth of field. Always include "Aspect ratio: X:X." as the first line.
+- [SUBJECT ACTION]: adjust pose, arm/hand position, body direction, expression, and gaze. Be precise — no vague descriptions.
+- [PROPS]: include if relevant to the cut; if no props, write "None."
+
+RULES FOR ALL SECTIONS:
+- Short imperative English sentences, one per line.
+- No color, tone, or color palette descriptions anywhere.
+- No facial features, ethnicity, or age descriptions.
+- All positional values must be precise. Never use "approximately" or "roughly."
+- For props: always specify exact bag type category, handle/strap structure and count, and how it is held.
 
 컷 리스트:
 ${cutListText}
 
-각 컷에 대해 의류/제품 디테일이나 인물의 얼굴 생김새는 언급하지 마세요.
-
-반드시 아래 JSON 형식으로만 응답하세요 (마크다운 코드펜스 없이 순수 JSON):
+Respond ONLY with the following JSON (no markdown fences, no text outside the JSON):
 {
   "cuts": [
-    { "name": "컷 이름 그대로", "prompt": "영문 프롬프트 전체 (마지막 줄에 Aspect ratio: X:X 포함)" }
+    { "name": "컷 이름 그대로", "prompt": "[MASTER DIRECTION]\\n...\\n\\n[SCENE]\\n...\\n\\n[CAMERA]\\nAspect ratio: X:X.\\n...\\n\\n[SUBJECT ACTION]\\n...\\n\\n[PROPS]\\n...\\n\\n[CLOTHING]\\n...\\n\\n[HAIR]\\n...\\n\\n[LIGHTING]\\n..." }
   ]
 }`;
   }
