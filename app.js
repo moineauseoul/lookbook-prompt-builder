@@ -425,6 +425,8 @@ Always dress the subject in a fixed ivory look:
 - Clean shirt collar and simple shirt placket may be visible when the crop includes the neck.
 - Sleeves must be full length and cover the wrists unless hands are visible.
 - Ivory shorts with a clean minimal silhouette.
+- The shorts are a styling requirement, not a framing requirement; do not widen the camera just to show the shorts.
+- In tight portrait crops, the shorts may be outside the frame.
 - No sweater, no knit pullover, no cardigan, no tank top, no trousers, no skirt, no dress.
 - No logos, jewelry, belts, scarves, or extra accessories.`;
 
@@ -443,9 +445,9 @@ Do not mention your analysis process.
 CRITICAL PRIORITY ORDER:
 1. Preserve the creative direction, emotion, and story moment.
 2. Preserve the locked hairstyle exactly.
-3. Force the fixed ivory long-sleeve shirt and ivory shorts outfit, regardless of the reference outfit.
-4. Preserve the bag, bag color, bag scale, and how the bag is held.
-5. Preserve camera framing, subject direction, gaze, and pose.
+3. Preserve the reference camera framing, crop tightness, subject placement, and composition.
+4. Preserve the bag height, bag scale, and hand/forearm relationship to the bag.
+5. Force the fixed ivory long-sleeve shirt and ivory shorts outfit, regardless of the reference outfit.
 6. Preserve the scene, lighting, color language, and textures.
 
 LEFT/RIGHT RULE:
@@ -461,7 +463,12 @@ REFERENCE EXTRACTION RULES:
 - If the subject is looking down, away, or toward the bag, state that clearly.
 - The bag must remain visually important and close to the torso. Preserve it as a substantial body-held object, not a small accessory.
 - Describe the bag as occupying roughly 35-45% of the frame width when the reference composition supports a tight portrait.
+- Preserve the vertical placement of the bag from the reference. If the reference bag rises to the upper chest, keep it high on the torso.
+- Do not lower the bag to the waist or hip unless the reference does.
+- Preserve the reference crop. Do not widen the image to show the outfit, shorts, legs, or more empty wall.
+- If the reference is a tight upper-body portrait, keep the output as a tight upper-body portrait.
 - If the bag is held close, hugged, supported, gripped, or resting against the body, state the exact relationship and make both arms support or cradle it.
+- If the reference shows one hand resting flat across or just above the top handle, preserve that hand as a bag-contact gesture, not a face gesture.
 - Hand-to-face gestures are prohibited unless the reference unmistakably shows actual contact with the mouth, lips, or chin.
 - If the hand position is ambiguous, choose bag contact over face contact.
 - Do not write "hand near mouth", "knuckles near lips", "fingers touching chin", or "contemplative hand-to-face gesture" unless the hand clearly touches the face in the reference.
@@ -490,7 +497,9 @@ ${fixedOutfit}
 If a bag is visible, describe the exact bag category, color, material finish, silhouette, handle/strap structure, and how it is held against the body.
 Make the bag large enough to read as a key object in the image, not a small purse.
 Preserve a substantial torso-held scale: the bag should cover a clear central area of the torso and occupy about 35-45% of the frame width in tight portraits.
-Describe the bag as hugged, cradled, supported from below, or held close to the chest/waist when the reference supports that relationship.
+Preserve the reference bag height. If the reference bag sits high against the chest and upper stomach, keep it there.
+Describe the bag as hugged, cradled, supported from below, or held close to the chest/upper stomach when the reference supports that relationship.
+If visible in the reference, keep one hand resting horizontally across or over the top handle while the opposite forearm supports the bottom of the bag.
 Include hand placement and support points only when visible or when needed to prevent hand-to-face drift.
 If no bag is visible, write: None.
 
@@ -502,12 +511,17 @@ Include colors and material textures when they are part of the atmosphere.
 [CAMERA]
 Aspect ratio: ${ratio}.
 Describe framing, crop points, distance, lens feeling, angle, depth of field, subject placement, headroom, and how much of the body is visible.
+Preserve the reference crop tightness exactly.
+If the reference crop is upper-body only, do not widen to show shorts, thighs, full body, or extra wall.
+If the bag is central in the lower half of the reference, keep the bag central and fully visible in the lower half.
 
 [SUBJECT ACTION]
 Describe the story moment, body direction, head tilt, gaze direction, expression, shoulders, arms, hands, and the subject's relationship to the bag.
 Make the pose feel motivated, not mechanical.
 Keep hands away from the mouth, lips, and chin unless the reference unmistakably shows contact.
 When in doubt, place both hands/forearms on the bag: one supporting from below and one resting over or around the handle/body.
+Preserve the reference hand architecture: one forearm beneath the bag, one hand resting flat over the top handle or upper edge when visible.
+Do not convert the pose into a standing product-catalog hold with one arm hanging down.
 
 [LIGHTING]
 Describe light source, direction, softness, shadow contrast, highlights, and time-of-day feeling when visible.
@@ -523,6 +537,8 @@ Include hairstyle failures, wrong bag size/color/handling, wrong gaze, wrong pos
 Always include: no hand near mouth, no fingers touching lips, no chin-touch pose, no contemplative hand-to-face gesture.
 Always include: do not shrink the bag, do not make it a small clutch, do not let it dangle from the handle, do not crop it out.
 Always include: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
+Always include: do not widen the crop to reveal shorts or legs when the reference is a tight portrait.
+Always include: do not lower the bag to the waist, do not make one arm hang straight down, do not turn the pose into a catalog standing pose.
 `;
     if (note) {
       p += `\nAdditional direction: ${note}\n`;
@@ -657,7 +673,7 @@ Always include: no outfit changes from the fixed ivory long-sleeve shirt and ivo
   function buildSeriesPrompt(selectedCuts) {
     const hairPreset = presets.find((p) => p.id === confirmedBase.hairPresetId);
     const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
-    const fixedOutfit = 'Ivory long-sleeve shirt and ivory shorts only. No sweater, no knit pullover, no cardigan, no tank top, no trousers, no skirt, no dress, no logos, no jewelry, no extra accessories.';
+    const fixedOutfit = 'Ivory long-sleeve shirt and ivory shorts only. Shorts are a styling requirement, not a framing requirement; do not widen tight crops just to show shorts. No sweater, no knit pullover, no cardigan, no tank top, no trousers, no skirt, no dress, no logos, no jewelry, no extra accessories.';
     const cutListText = selectedCuts.map((c, i) => `${i + 1}. ${c.name} (aspect ratio ${c.ratio})`).join('\n');
 
     return `Below is the confirmed base blueprint for a lookbook image:
@@ -676,7 +692,7 @@ FIXED ACROSS ALL CUTS:
 - [MASTER DIRECTION]: preserve the base creative direction, emotion, and story moment.
 - [HAIR]: use this exact fixed hairstyle and negative locks: "${hairSection}"
 - [OUTFIT]: always use this fixed outfit: "${fixedOutfit}"
-- [BAG]: preserve the base bag identity, color, material finish, substantial torso-held scale, and the feeling of how it is cradled or supported unless a cut is explicitly about no bag.
+- [BAG]: preserve the base bag identity, color, material finish, substantial torso-held scale, high torso placement, and the feeling of how it is cradled or supported unless a cut is explicitly about no bag.
 - [SCENE]: preserve the same location, atmosphere, color relationship, and mood-setting architectural/background elements.
 - [LIGHTING]: preserve the same light source, softness, direction, contrast, and time-of-day feeling.
 - [COLOR & TEXTURE]: preserve the base palette relationship and tactile qualities.
@@ -684,7 +700,7 @@ FIXED ACROSS ALL CUTS:
 
 VARIABLE PER CUT:
 - [CAMERA]: change framing, crop, distance, angle, subject placement, and depth of field to match the cut name. Always begin with "Aspect ratio: X:X."
-- [SUBJECT ACTION]: change body direction, gaze, hand/arm placement, and bag interaction to match the cut name while staying natural and motivated. Keep hands away from mouth, lips, and chin unless the base explicitly requires face contact.
+- [SUBJECT ACTION]: change body direction, gaze, hand/arm placement, and bag interaction to match the cut name while staying natural and motivated. Keep hands away from mouth, lips, and chin unless the base explicitly requires face contact. Preserve bag-contact hand architecture whenever the cut is a bag-focused crop.
 - [BAG]: if the cut changes how the bag appears, describe the new grip/support/wear relationship precisely while preserving bag identity and substantial torso-held scale.
 
 RULES:
@@ -697,6 +713,8 @@ RULES:
 - Do not create hand-to-face gestures, fingers touching lips, chin-touch poses, or a contemplative hand near the mouth.
 - Do not shrink the bag into a small purse or clutch. Keep it visibly important and close to the body.
 - Do not change the fixed ivory long-sleeve shirt and ivory shorts outfit.
+- Do not widen tight portrait crops just to show shorts or legs.
+- Do not lower the bag to the waist or turn the pose into a catalog hold.
 - Use image left/image right from the viewer's perspective when describing direction.
 
 컷 리스트:
