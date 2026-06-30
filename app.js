@@ -390,10 +390,12 @@
   });
 
   function buildBasePrompt(ratio, note, hairPreset) {
-    const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
+    const hairSection = hairPreset
+      ? `[HAIR] 섹션은 아래 고정된 헤어스타일 설명을 그대로, 한 글자도 바꾸지 말고 정확히 포함하세요. 레퍼런스 이미지의 헤어스타일은 무시하고 아래 설명만 사용하세요:\n${hairPreset.desc}`
+      : 'Not specified.';
 
     let p = `레퍼런스 이미지를 매우 꼼꼼하게 분석하세요. 배경의 모든 요소(벽, 창문, 식물, 바닥 등), 인물의 정확한 자세(양팔, 손, 손가락, 고개 각도, 시선), 카메라의 정확한 거리와 각도, 프레임이 신체의 정확히 어느 지점에서 시작하고 끝나는지를 빠짐없이 포착하세요. 색상을 제외한 모든 시각적 정보는 최대한 구체적으로 작성하세요.
-좌우 방향을 묘사할 때는 반드시 '카메라에서 바라봤을 때(viewer's perspective)' 기준으로 명확히 표기하세요. 예를 들어 인물이 카메라 기준 오른쪽을 바라보고 있다면 'the subject's head is turned toward the viewer's right'라고 명시하고, 인물 자신의 좌우와 혼동되지 않도록 매번 'from the viewer's perspective'를 표기하세요.
+매우 중요: 좌우 방향 판단 시 거울에 비친 것처럼 반대로 착각하기 쉽습니다. 화면의 왼쪽에 있는 것은 'frame left' 또는 'image left'로, 화면 오른쪽에 있는 것은 'frame right' 또는 'image right'로 표기하세요 (viewer's left/right와 동일한 의미). 인물의 얼굴이 화면의 오른쪽(image right)을 향해 있다면 반드시 'the face is turned toward image right'라고 정확히 쓰세요. 이 판단을 작성하기 전에 이미지에서 인물의 코끝이 화면의 왼쪽과 오른쪽 중 어느 쪽으로 더 가까이 향해 있는지 먼저 확인한 후 작성하세요.
 
 Analyze the reference image with extreme precision and output the result using the exact section structure below.
 
@@ -418,7 +420,7 @@ Aspect ratio: ${ratio}.
 (Add: framing type, camera distance, shooting angle, and depth of field. For the top of the frame: state precisely where it cuts relative to the subject's head — e.g., slight space above the crown, crown slightly cropped, or frame starting at the forehead. If headroom is minimal, write "minimal to no headroom, frame nearly touches the top of the head." For the bottom of the frame: state exactly where it cuts on the body — e.g., mid-thigh, hip bone, waist. Never leave these crop points vague.)
 
 [SUBJECT ACTION]
-(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces (always from the viewer's perspective), head tilt angle, facial expression, and exact gaze direction. State whether the eyes are open or closed. Describe precisely whether and where the hand contacts the face — e.g., whether the hand supports the chin, rests near the lips, or is held away from the face without any contact. Never generalize as a "contemplative gesture"; always specify the exact contact point or explicit lack of contact between hand and face.)
+(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces (always from the viewer's perspective), head tilt angle, facial expression, and exact gaze direction. State whether the eyes are open or closed. Before describing any hand-face interaction, re-examine the reference image carefully. Do not assume the hand touches the chin or lips — observe with pixel-level precision whether the hand is actually touching or hovering away. If fingers are near the face but not touching, write "fingers hover near the chin without touching" or equivalent. Never generalize as a "contemplative gesture"; always specify the exact contact point or the explicit gap between hand and face.)
 
 [PROPS]
 (If props are present in the reference: state the exact bag type category, handle/strap structure and count, how the prop is held or worn, its relative size in the frame, the exact finger positions gripping the handle or strap, the grip point on the handle, and the precise arm posture while holding it. No colors or materials. If no props are visible, write: None.)
