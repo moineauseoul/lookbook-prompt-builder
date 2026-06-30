@@ -392,16 +392,17 @@
   function buildBasePrompt(ratio, note, hairPreset) {
     const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
 
-    let p = `Analyze the reference image with extreme precision and output the result using the exact section structure below.
+    let p = `레퍼런스 이미지를 매우 꼼꼼하게 분석하세요. 배경의 모든 요소(벽, 창문, 식물, 바닥 등), 인물의 정확한 자세(양팔, 손, 손가락, 고개 각도, 시선), 카메라의 정확한 거리와 각도, 프레임이 신체의 정확히 어느 지점에서 시작하고 끝나는지를 빠짐없이 포착하세요. 색상을 제외한 모든 시각적 정보는 최대한 구체적으로 작성하세요.
+
+Analyze the reference image with extreme precision and output the result using the exact section structure below.
 
 ANALYSIS RULES (apply to every section without exception):
 - Use short, imperative English sentences. One sentence per line within each section.
-- No color, tone, color palette, or color temperature descriptions anywhere — not in scene, not in lighting, not anywhere. The only permitted color reference is the fixed white clothing in [CLOTHING].
+- No color, tone, color palette, or color temperature descriptions anywhere — not in scene, not in lighting, not anywhere. 단, 의류와 소품의 형태/구조/실루엣 묘사는 색상과 무관하게 최대한 상세히 작성해야 합니다.
 - No facial features, ethnicity, or age descriptions.
-- No clothing descriptions outside of [CLOTHING].
 - No hair descriptions outside of [HAIR].
 - All positional and angular values must be stated with maximum precision. Never use "approximately" or "roughly."
-- For props (bags, accessories): always state the exact bag type category (e.g. shoulder bag, tote bag, clutch, crossbody bag), the handle/strap structure and count (top handle only, shoulder strap only, or both), how it is held or worn, and its relative size in the frame. Never write "medium-sized bag" or any other vague size descriptor.
+- For props (bags, accessories): always state the exact bag type category (e.g. shoulder bag, tote bag, clutch, crossbody bag), the handle/strap structure and count (top handle only, shoulder strap only, or both), how it is held or worn, its relative size in the frame, the exact hand and finger positions used to grip or carry it (which fingers contact which part, grip point on the handle), and the precise arm posture while holding it. Never write "medium-sized bag" or any other vague size descriptor.
 
 OUTPUT FORMAT — reproduce these section headers exactly, in this order. Output nothing outside the sections:
 
@@ -409,23 +410,20 @@ OUTPUT FORMAT — reproduce these section headers exactly, in this order. Output
 (Write 2–3 short imperative sentences: single subject only; replicate the exact environment and atmosphere of the reference; minimal styling with no distracting elements.)
 
 [SCENE]
-(Describe the location, physical environment, and structural or environmental elements visible in the frame. No colors or tones.)
+(Describe the location, physical environment, and every structural or environmental element visible in the frame — walls, windows, plants, floor surfaces, furniture, etc. No colors or tones.)
 
 [CAMERA]
 Aspect ratio: ${ratio}.
-(Add: framing type, where the top and bottom of the frame cut the subject, camera distance, shooting angle, and depth of field.)
+(Add: framing type, the exact body points where the top and bottom of the frame cut the subject, camera distance, shooting angle, and depth of field.)
 
 [SUBJECT ACTION]
-(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces, facial expression, and exact gaze direction.)
+(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces, head tilt angle, facial expression, and exact gaze direction.)
 
 [PROPS]
-(If props are present in the reference: state the exact bag type category, handle/strap structure and count, how the prop is held or worn, and its relative size in the frame. No colors or materials. If no props are visible, write: None.)
+(If props are present in the reference: state the exact bag type category, handle/strap structure and count, how the prop is held or worn, its relative size in the frame, the exact finger positions gripping the handle or strap, the grip point on the handle, and the precise arm posture while holding it. No colors or materials. If no props are visible, write: None.)
 
 [CLOTHING]
-Subject wears a plain white tank top fully covering the chest, torso, and stomach, with straps over both shoulders.
-Subject wears plain white shorts of moderate mid-thigh length.
-No skin exposed at the midriff under any arm position.
-No logos, patterns, or accessories.
+(Describe the silhouette, fit, length, volume, and layering structure of the clothing visible in the reference image — e.g., oversized knit cardigan with visible inner layer, wide-leg trousers with high waist, etc. Render all garment colors as off-white regardless of the original. Do not mention any patterns, logos, or brand details. Ensure no inappropriate skin exposure while preserving the original silhouette and structure as accurately as possible.)
 
 [HAIR]
 ${hairSection}
