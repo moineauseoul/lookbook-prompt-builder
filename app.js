@@ -310,7 +310,26 @@
   }
 
   async function analyzeHairPreset(frontImg, sideImg) {
-    const prompt = `위 두 장의 이미지(정면, 측면)는 같은 인물의 헤어스타일 레퍼런스입니다. 이 헤어스타일을 영문으로 상세하게 묘사하는 한 문단을 작성해주세요. 머리 길이, 컬러, 질감(웨이브/스트레이트), 스타일링 방식(묶음/로우번/풀어헤침 등), 가르마 위치만 포함하고 인물의 얼굴 생김새나 표정은 언급하지 마세요. 마크다운 없이 영문 설명 문장만 출력하세요.`;
+    const prompt = `The two images are front and side references for one fixed hairstyle.
+
+Reverse-engineer the hairstyle as a production lock for an image-generation prompt.
+Do not merely describe what is visible.
+Identify what must remain unchanged when the subject pose, camera angle, or scene changes.
+
+Output in English only.
+Use the exact format below and nothing else:
+
+[HAIR]
+Write 6-10 short lines describing the hairstyle.
+Include hair color, parting, hairline behavior, volume level, texture, tied/untied structure, bun/ponytail/braid/etc. position, and any face-framing strands.
+
+[HAIR LOCKS]
+Write 4-8 short negative constraints that prevent the common wrong hairstyle.
+Use direct phrases such as "This is NOT ...", "No ...", and "Do not create ...".
+If the hair is a bun, explicitly forbid ponytail tails and hanging ends.
+If the hair is loose, explicitly forbid tying it.
+
+Do not mention facial identity, expression, age, ethnicity, clothing, lighting, or background.`;
     return callVisionAPI([frontImg, sideImg], prompt, true);
   }
 
@@ -333,7 +352,7 @@
   // ───────────────────────────────────────────────────────────
   baseFile.addEventListener('change', async (e) => {
     const f = e.target.files[0]; if (!f) return;
-    baseImage = await fileToResizedImage(f, 1400, 0.85);
+    baseImage = await fileToResizedImage(f, 1800, 0.9);
     baseZoneEmpty.style.display = 'none';
     basePreview.src = baseImage.url; basePreview.style.display = 'block';
     extractBaseBtn.disabled = false;
@@ -344,7 +363,7 @@
     e.preventDefault(); baseZone.classList.remove('drag');
     const f = [...e.dataTransfer.files].find((x) => x.type.startsWith('image/'));
     if (!f) return;
-    baseImage = await fileToResizedImage(f, 1400, 0.85);
+    baseImage = await fileToResizedImage(f, 1800, 0.9);
     baseZoneEmpty.style.display = 'none';
     basePreview.src = baseImage.url; basePreview.style.display = 'block';
     extractBaseBtn.disabled = false;
@@ -391,48 +410,98 @@
 
   function buildBasePrompt(ratio, note, hairPreset) {
     const hairSection = hairPreset
-      ? `[HAIR] 섹션은 아래 고정된 헤어스타일 설명을 그대로, 한 글자도 바꾸지 말고 정확히 포함하세요. 레퍼런스 이미지의 헤어스타일은 무시하고 아래 설명만 사용하세요:\n${hairPreset.desc}`
-      : 'Not specified.';
+      ? `Use this exact fixed hairstyle instead of the hairstyle in the reference image.
+Copy the description into [HAIR] without weakening it.
+If the saved preset already includes [HAIR LOCKS], copy those locks too.
+If it does not include [HAIR LOCKS], infer 4-8 explicit negative locks from the saved hairstyle description to prevent the most likely wrong hairstyle.
+For example, if the saved hairstyle is a low bun, forbid ponytails, hanging tails, loose ends, and glamorous volume.
 
-    let p = `레퍼런스 이미지를 매우 꼼꼼하게 분석하세요. 배경의 모든 요소(벽, 창문, 식물, 바닥 등), 인물의 정확한 자세(양팔, 손, 손가락, 고개 각도, 시선), 카메라의 정확한 거리와 각도, 프레임이 신체의 정확히 어느 지점에서 시작하고 끝나는지를 빠짐없이 포착하세요. 색상을 제외한 모든 시각적 정보는 최대한 구체적으로 작성하세요.
-매우 중요: 좌우 방향 판단 시 거울에 비친 것처럼 반대로 착각하기 쉽습니다. 화면의 왼쪽에 있는 것은 'frame left' 또는 'image left'로, 화면 오른쪽에 있는 것은 'frame right' 또는 'image right'로 표기하세요 (viewer's left/right와 동일한 의미). 인물의 얼굴이 화면의 오른쪽(image right)을 향해 있다면 반드시 'the face is turned toward image right'라고 정확히 쓰세요. 이 판단을 작성하기 전에 이미지에서 인물의 코끝이 화면의 왼쪽과 오른쪽 중 어느 쪽으로 더 가까이 향해 있는지 먼저 확인한 후 작성하세요.
+${hairPreset.desc}`
+      : `Extract the hairstyle from the reference image as a locked styling element.
+Include structure, parting, volume, texture, tied/untied shape, and negative constraints that prevent likely wrong interpretations.`;
 
-Analyze the reference image with extreme precision and output the result using the exact section structure below.
+    let p = `You are not writing a caption.
+You are reverse-engineering the reference image into an image-generation design blueprint.
 
-ANALYSIS RULES (apply to every section without exception):
-- Use short, imperative English sentences. One sentence per line within each section.
-- No color, tone, color palette, or color temperature descriptions anywhere — not in scene, not in lighting, not anywhere. 단, 의류와 소품의 형태/구조/실루엣 묘사는 색상과 무관하게 최대한 상세히 작성해야 합니다.
-- No facial features, ethnicity, or age descriptions.
-- No hair descriptions outside of [HAIR].
-- All positional and angular values must be stated with maximum precision. Never use "approximately" or "roughly."
-- For props (bags, accessories): always state the exact bag type category (e.g. shoulder bag, tote bag, clutch, crossbody bag), the handle/strap structure and count (top handle only, shoulder strap only, or both), how it is held or worn, its relative size in the frame, the exact hand and finger positions used to grip or carry it (which fingers contact which part, grip point on the handle), and the precise arm posture while holding it. Never write "medium-sized bag" or any other vague size descriptor.
+FIRST, silently identify:
+- What creates the mood of the image.
+- What story moment is being photographed.
+- Which elements must never change for the result to feel like the same lookbook image.
+- Which elements are merely incidental and should stay quiet.
 
-OUTPUT FORMAT — reproduce these section headers exactly, in this order. Output nothing outside the sections:
+Then output the final prompt in English only.
+Do not mention your analysis process.
+
+CRITICAL PRIORITY ORDER:
+1. Preserve the creative direction, emotion, and story moment.
+2. Preserve the locked hairstyle exactly.
+3. Preserve the outfit, bag, bag color, bag scale, and how the bag is held.
+4. Preserve camera framing, subject direction, gaze, and pose.
+5. Preserve the scene, lighting, color language, and textures.
+
+LEFT/RIGHT RULE:
+Use image left and image right from the viewer's perspective.
+Before writing face direction, hand position, or bag position, check where the nose, gaze, shoulders, and bag sit in the image.
+Do not mirror the image.
+
+REFERENCE EXTRACTION RULES:
+- Keep color language. Include clothing colors, bag color, wall/window/wood colors, skin tone only if needed for identity consistency, and overall palette.
+- Keep texture language. Include knit, leather, plaster, wood, glass, foliage, film grain, softness, and surface finish when visible.
+- Do not over-inventory the background. Describe only the scene elements that shape the mood or composition.
+- Do not replace the photographed moment with a generic product pose.
+- If the subject is looking down, away, or toward the bag, state that clearly.
+- If the bag is held close, hugged, supported, gripped, or resting against the body, state the exact relationship.
+- If a hand is near the face or bag, verify the actual contact point. Do not invent chin/lip contact.
+- Avoid approximate numbers unless a numeric angle is genuinely useful. Prefer plain precise language over fake precision.
+- Do not describe facial features, ethnicity, or age.
+- Use negative locks for common generation failures, especially hairstyle, bag scale, pose, gaze, and framing.
+
+OUTPUT FORMAT:
+Use these exact section headers and order.
+Write short prompt lines, not paragraphs.
+Output nothing outside the sections.
 
 [MASTER DIRECTION]
-(Write 2–3 short imperative sentences: single subject only; replicate the exact environment and atmosphere of the reference; minimal styling with no distracting elements.)
-
-[SCENE]
-(Describe the location, physical environment, and every structural or environmental element visible in the frame — walls, windows, plants, floor surfaces, furniture, etc. No colors or tones. For each structural element (columns, frames, doors, windows, etc.), describe its shape, its position in the frame (e.g., far left edge, center background, right side), and its surface texture (e.g., wooden column, metal frame, concrete wall). If multiple structural elements are present, specify each one's position individually.)
-
-[CAMERA]
-Aspect ratio: ${ratio}.
-(Add: framing type, camera distance, shooting angle, and depth of field. For the top of the frame: state precisely where it cuts relative to the subject's head — e.g., slight space above the crown, crown slightly cropped, or frame starting at the forehead. If headroom is minimal, write "minimal to no headroom, frame nearly touches the top of the head." For the bottom of the frame: state exactly where it cuts on the body — e.g., mid-thigh, hip bone, waist. Never leave these crop points vague.)
-
-[SUBJECT ACTION]
-(Describe in precise detail: exact position of both arms and hands, finger placement, body rotation angle, which direction the subject faces (always from the viewer's perspective), head tilt angle, facial expression, and exact gaze direction. State whether the eyes are open or closed. Before describing any hand-face interaction, re-examine the reference image carefully. Do not assume the hand touches the chin or lips — observe with pixel-level precision whether the hand is actually touching or hovering away. If fingers are near the face but not touching, write "fingers hover near the chin without touching" or equivalent. Never generalize as a "contemplative gesture"; always specify the exact contact point or the explicit gap between hand and face.)
-
-[PROPS]
-(If props are present in the reference: state the exact bag type category, handle/strap structure and count, how the prop is held or worn, its relative size in the frame, the exact finger positions gripping the handle or strap, the grip point on the handle, and the precise arm posture while holding it. No colors or materials. If no props are visible, write: None.)
-
-[CLOTHING]
-(Describe the silhouette, fit, length, volume, and layering structure of the clothing visible in the reference image — e.g., oversized knit cardigan with visible inner layer, wide-leg trousers with high waist, etc. Render all garment colors as off-white regardless of the original. Do not mention any patterns, logos, or brand details. Ensure no inappropriate skin exposure while preserving the original silhouette and structure as accurately as possible.)
+Define the image type, brand feeling, mood, and story moment.
+Say what the image is really about, not just what objects are present.
+Include "Single female subject only."
 
 [HAIR]
 ${hairSection}
 
+[OUTFIT]
+Describe the visible outfit silhouette, layering, fit, volume, garment length, material texture, and colors.
+Do not invent logos, jewelry, or extra styling.
+
+[BAG]
+If a bag is visible, describe the exact bag category, color, material finish, silhouette, handle/strap structure, size in the frame, and how it is held against the body.
+Include hand placement and support points only when visible.
+If no bag is visible, write: None.
+
+[SCENE]
+Describe the mood-setting location and composition.
+Include only important structural elements, background depth, window/opening relationship, and environmental details.
+Include colors and material textures when they are part of the atmosphere.
+
+[CAMERA]
+Aspect ratio: ${ratio}.
+Describe framing, crop points, distance, lens feeling, angle, depth of field, subject placement, headroom, and how much of the body is visible.
+
+[SUBJECT ACTION]
+Describe the story moment, body direction, head tilt, gaze direction, expression, shoulders, arms, hands, and the subject's relationship to the bag.
+Make the pose feel motivated, not mechanical.
+
 [LIGHTING]
-(Describe the direction and quality of light only — e.g., front-facing diffused light, side rim light, harsh overhead sunlight. No color temperature or color descriptions.)
+Describe light source, direction, softness, shadow contrast, highlights, and time-of-day feeling when visible.
+Include color temperature only if it matters to the mood.
+
+[COLOR & TEXTURE]
+List the essential palette relationships and tactile qualities.
+Explain the color harmony briefly through prompt lines.
+
+[NEGATIVE LOCKS]
+List what must not change.
+Include hairstyle failures, wrong bag size/color/handling, wrong gaze, wrong pose, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
 `;
     if (note) {
       p += `\nAdditional direction: ${note}\n`;
@@ -569,32 +638,41 @@ ${hairSection}
     const hairSection = hairPreset ? hairPreset.desc : 'Not specified.';
     const cutListText = selectedCuts.map((c, i) => `${i + 1}. ${c.name} (aspect ratio ${c.ratio})`).join('\n');
 
-    return `Below is the confirmed base concept prompt for a lookbook shoot, already structured in sections:
+    return `Below is the confirmed base blueprint for a lookbook image:
 
 """
 ${confirmedBase.text}
 """
 
-Generate individual cut prompts for the cuts listed below. Each cut prompt MUST use the exact same section structure as the base ([MASTER DIRECTION], [SCENE], [CAMERA], [SUBJECT ACTION], [PROPS], [CLOTHING], [HAIR], [LIGHTING]).
+Generate individual cut prompts for the cuts listed below.
+Each cut must feel like the same brand shoot, same reference atmosphere, and same design logic, but with a new camera/pose purpose.
 
-FIXED ACROSS ALL CUTS — copy these sections verbatim from the base, do not alter them:
-- [MASTER DIRECTION]: identical to the base.
-- [SCENE]: identical to the base.
-- [LIGHTING]: identical to the base.
-- [CLOTHING]: always — "Subject wears a plain white tank top fully covering the chest, torso, and stomach, with straps over both shoulders. Subject wears plain white shorts of moderate mid-thigh length. No skin exposed at the midriff under any arm position. No logos, patterns, or accessories."
-- [HAIR]: always — "${hairSection}"
+Do not make a generic catalog pose.
+Keep the quiet story moment, color language, texture, bag identity, outfit identity, and lighting behavior from the base.
 
-VARIABLE PER CUT — generate new content for each cut to match its purpose:
-- [CAMERA]: adjust framing type, crop position, camera distance, angle, and depth of field. Always include "Aspect ratio: X:X." as the first line.
-- [SUBJECT ACTION]: adjust pose, arm/hand position, body direction, expression, and gaze. Be precise — no vague descriptions.
-- [PROPS]: include if relevant to the cut; if no props, write "None."
+FIXED ACROSS ALL CUTS:
+- [MASTER DIRECTION]: preserve the base creative direction, emotion, and story moment.
+- [HAIR]: use this exact fixed hairstyle and negative locks: "${hairSection}"
+- [OUTFIT]: preserve the base outfit identity, color, material, layering, silhouette, and level of styling.
+- [BAG]: preserve the base bag identity, color, material finish, scale logic, and the feeling of how it is held or carried unless a cut is explicitly about no bag.
+- [SCENE]: preserve the same location, atmosphere, color relationship, and mood-setting architectural/background elements.
+- [LIGHTING]: preserve the same light source, softness, direction, contrast, and time-of-day feeling.
+- [COLOR & TEXTURE]: preserve the base palette relationship and tactile qualities.
+- [NEGATIVE LOCKS]: keep all relevant base locks and add cut-specific locks when needed.
 
-RULES FOR ALL SECTIONS:
-- Short imperative English sentences, one per line.
-- No color, tone, or color palette descriptions anywhere.
-- No facial features, ethnicity, or age descriptions.
-- All positional values must be precise. Never use "approximately" or "roughly."
-- For props: always specify exact bag type category, handle/strap structure and count, and how it is held.
+VARIABLE PER CUT:
+- [CAMERA]: change framing, crop, distance, angle, subject placement, and depth of field to match the cut name. Always begin with "Aspect ratio: X:X."
+- [SUBJECT ACTION]: change body direction, gaze, hand/arm placement, and bag interaction to match the cut name while staying natural and motivated.
+- [BAG]: if the cut changes how the bag appears, describe the new grip/support/wear relationship precisely while preserving bag identity and scale logic.
+
+RULES:
+- Use the exact section structure below for every cut:
+  [MASTER DIRECTION], [HAIR], [OUTFIT], [BAG], [SCENE], [CAMERA], [SUBJECT ACTION], [LIGHTING], [COLOR & TEXTURE], [NEGATIVE LOCKS]
+- Write in English only.
+- Use short prompt lines.
+- Do not mention facial features, ethnicity, or age.
+- Do not add jewelry, extra accessories, extra furniture, extra people, logos, or editorial exaggeration unless present in the base.
+- Use image left/image right from the viewer's perspective when describing direction.
 
 컷 리스트:
 ${cutListText}
@@ -602,7 +680,7 @@ ${cutListText}
 Respond ONLY with the following JSON (no markdown fences, no text outside the JSON):
 {
   "cuts": [
-    { "name": "컷 이름 그대로", "prompt": "[MASTER DIRECTION]\\n...\\n\\n[SCENE]\\n...\\n\\n[CAMERA]\\nAspect ratio: X:X.\\n...\\n\\n[SUBJECT ACTION]\\n...\\n\\n[PROPS]\\n...\\n\\n[CLOTHING]\\n...\\n\\n[HAIR]\\n...\\n\\n[LIGHTING]\\n..." }
+    { "name": "컷 이름 그대로", "prompt": "[MASTER DIRECTION]\\n...\\n\\n[HAIR]\\n...\\n\\n[OUTFIT]\\n...\\n\\n[BAG]\\n...\\n\\n[SCENE]\\n...\\n\\n[CAMERA]\\nAspect ratio: X:X.\\n...\\n\\n[SUBJECT ACTION]\\n...\\n\\n[LIGHTING]\\n...\\n\\n[COLOR & TEXTURE]\\n...\\n\\n[NEGATIVE LOCKS]\\n..." }
   ]
 }`;
   }
@@ -659,6 +737,7 @@ Respond ONLY with the following JSON (no markdown fences, no text outside the JS
     const provider = apiProvider.value;
     const key = apiKeyEl.value.trim() || localStorage.getItem('lpb_key_' + provider);
     const model = apiModel.value || (MODELS[provider][0].v);
+    const maxTokens = isHairAnalysis ? 1200 : 3200;
 
     if (provider === 'claude') {
       const content = [];
@@ -675,7 +754,7 @@ Respond ONLY with the following JSON (no markdown fences, no text outside the JS
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true'
         },
-        body: JSON.stringify({ model, max_tokens: 1200, messages: [{ role: 'user', content }] })
+        body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'user', content }] })
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
@@ -693,7 +772,7 @@ Respond ONLY with the following JSON (no markdown fences, no text outside the JS
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model, max_tokens: 1200, messages: [{ role: 'user', content }] })
+      body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'user', content }] })
     });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
@@ -707,6 +786,7 @@ Respond ONLY with the following JSON (no markdown fences, no text outside the JS
     const provider = apiProvider.value;
     const key = apiKeyEl.value.trim() || localStorage.getItem('lpb_key_' + provider);
     const model = apiModel.value || (MODELS[provider][0].v);
+    const maxTokens = 5000;
 
     if (provider === 'claude') {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -717,7 +797,7 @@ Respond ONLY with the following JSON (no markdown fences, no text outside the JS
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true'
         },
-        body: JSON.stringify({ model, max_tokens: 3000, messages: [{ role: 'user', content: promptText }] })
+        body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'user', content: promptText }] })
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
@@ -730,7 +810,7 @@ Respond ONLY with the following JSON (no markdown fences, no text outside the JS
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({ model, max_tokens: 3000, messages: [{ role: 'user', content: promptText }] })
+      body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'user', content: promptText }] })
     });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));
