@@ -199,6 +199,7 @@
       card.className = 'preset-card';
       card.innerHTML = `
         <button class="preset-del" data-id="${p.id}" title="삭제">✕</button>
+        <button class="preset-view" data-id="${p.id}" title="설명 보기" style="position:absolute;top:4px;right:28px;background:none;border:none;cursor:pointer;font-size:.85rem;">📝</button>
         <div class="preset-thumbs">
           <img src="${p.front ? p.front.url : ''}" alt="정면">
           <img src="${p.side ? p.side.url : ''}" alt="측면">
@@ -206,6 +207,27 @@
         <div class="preset-name">${esc(p.name)}</div>
       `;
       presetGrid.insertBefore(card, presetAddBtn);
+    });
+    presetGrid.querySelectorAll('.preset-view').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const p = presets.find((x) => x.id === btn.dataset.id);
+        if (!p) return;
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;';
+        overlay.innerHTML = `
+          <div style="background:#fff;border-radius:12px;padding:1.6rem;max-width:520px;width:100%;">
+            <h4 style="margin-bottom:.6rem;">${esc(p.name)} — 저장된 헤어 설명</h4>
+            <textarea readonly style="width:100%;min-height:300px;font-size:.75rem;line-height:1.5;padding:.6rem;box-sizing:border-box;border:1px solid #e5e7eb;border-radius:6px;resize:vertical;">${esc(p.desc || '')}</textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:.6rem;">
+              <button class="btn-ghost btn-small" id="preset-view-close">닫기</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#preset-view-close').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', (ev) => { if (ev.target === overlay) overlay.remove(); });
+      });
     });
     presetGrid.querySelectorAll('.preset-del').forEach((btn) => {
       btn.addEventListener('click', (e) => {
