@@ -465,6 +465,8 @@ FIRST, silently look at the reference image and answer these questions to yourse
 - Does the torso lean forward and downward, as if collapsing, flopping, or draping down toward a surface — or does it lean backward and upward, as if reclining and relaxing against a backrest? These are opposite directions and easy to confuse; pick the one that is actually shown. The head tilt and gaze target must be consistent with this lean direction (a forward-downward lean usually pairs with a downward gaze toward whatever the lower hand is doing, not an averted or upward gaze).
 - Where exactly is the head tilted and where is the gaze pointed (at a specific object, down, away, at camera, at own hands)?
 - What is each hand/arm doing, specifically and separately (e.g., "left hand rests flat on top of the head", "right arm extends down reaching toward an object")? Do not default to a generic pose. Describe hands and arms independently of each other.
+- Check each hand one at a time, independently: is one hand touching the subject's own head/hair while the other hand touches a separate object (book, cup, etc.)? If so, these are two unrelated actions — do not merge them into a single two-handed action on the object just because an object is present.
+- Is the body stretched out diagonally along the length of the seat, as if reclining or lying down, with the hips and legs elevated onto the furniture — or is the subject sitting upright with legs bent, tucked, or crossed on the seat? These read as very different poses; identify exactly which one is shown.
 - What is the facial expression's emotional quality (without describing facial features, ethnicity, or age)?
 - Is there an object being interacted with (book, bag, cup, phone, glasses, etc.)? If so, describe exactly how it is held, touched, or approached — do not assume it is a bag.
 
@@ -538,7 +540,8 @@ State explicitly which surface each major body part rests on (torso, hips, legs,
 State explicitly whether the torso's lean direction is forward-and-downward (collapsing/draping toward a surface) or backward-and-upward (reclining against a backrest). Confirm the head tilt and gaze target match that lean direction. Do not substitute a backward-reclining, gazing-away pose for a forward, downward-collapsed pose, or vice versa.
 State explicitly which side of the frame the head/hair is on (image-left or image-right) and which side the legs/lower body extend toward, matching the reference exactly per the LEFT/RIGHT RULE.
 Describe the body direction/orientation, head tilt, and gaze target exactly as observed.
-Describe what each hand and arm is doing, independently, using specific verbs (resting, reaching, gripping, dangling, pressing, cradling).
+Describe what each hand and arm is doing, independently, using specific verbs (resting, reaching, gripping, dangling, pressing, cradling). If one hand touches the subject's own head/hair while the other touches a separate object, state this explicitly as two separate actions — never combine them into both hands on the same object.
+State whether the torso and legs are stretched out diagonally in a reclining/lying position along the seat, or upright and seated with legs bent/tucked/crossed. Preserve exactly which one is shown; do not convert a reclining diagonal body into an upright seated one, or vice versa.
 Describe the facial expression's emotional quality only (calm, playful, focused, distant, etc.) without describing facial features.
 Make the pose feel motivated by the story moment, not mechanical.
 Do not force a downward gaze, a hand-to-bag position, or any other template pose that is not actually visible in the reference.
@@ -561,6 +564,8 @@ Always include: do not mirror or flip the left/right body orientation from the r
 Always include: do not turn a forward, downward-collapsed torso lean into a backward, upright reclining lean, or vice versa.
 Always include: do not turn a downward gaze toward an object into an averted or upward gaze away from it, or vice versa.
 Always include: do not turn a near-overhead camera angle into an eye-level or moderate angle, or vice versa.
+Always include: do not merge a one-hand-on-head-plus-one-hand-on-object pose into a two-hands-on-the-same-object pose.
+Always include: do not turn a diagonally reclining, stretched-out body into an upright, legs-bent-or-crossed seated pose, or vice versa.
 Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
 Include object lock only if an object is present in [OBJECT].
 `;
