@@ -369,6 +369,27 @@ Do not mention facial identity, expression, age, ethnicity, clothing, lighting, 
     extractBaseBtn.disabled = false;
   });
 
+  document.addEventListener('paste', async (e) => {
+    const basePanel = document.getElementById('panel-base');
+    if (!basePanel || !basePanel.classList.contains('active')) return;
+    const active = document.activeElement;
+    if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) return;
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    let imageItem = null;
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) { imageItem = item; break; }
+    }
+    if (!imageItem) return;
+    e.preventDefault();
+    const file = imageItem.getAsFile();
+    if (!file) return;
+    baseImage = await fileToResizedImage(file, 1800, 0.9);
+    baseZoneEmpty.style.display = 'none';
+    basePreview.src = baseImage.url; basePreview.style.display = 'block';
+    extractBaseBtn.disabled = false;
+  });
+
   baseRatioGroup.querySelectorAll('.chip').forEach((c) => {
     c.addEventListener('click', () => {
       baseRatioGroup.querySelectorAll('.chip').forEach((x) => x.classList.remove('active'));
