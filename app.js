@@ -461,6 +461,7 @@ FIRST, silently look at the reference image and answer these questions to yourse
 - Where is the subject positioned in the frame (centered, left, right, upper, lower) and how is the frame cropped (which body parts are cut off by the edge)?
 - Roughly how much of the frame does the subject's body occupy, and how much visible background/negative space surrounds them? Is this a tight, intimate crop or a wide, room-showing shot?
 - What is the subject's body doing (lying, sitting, leaning, reclining, standing, twisting) and in which direction is the torso/shoulders facing?
+- Which surface is each part of the subject's body actually resting on — the floor, the sofa seat, the sofa arm, a cushion? Is the entire body (torso, hips, legs) elevated onto the furniture, or does part of the body touch the ground? Do not assume a floor-kneeling pose if the reference shows the body draped or lying across furniture.
 - Where exactly is the head tilted and where is the gaze pointed (at a specific object, down, away, at camera, at own hands)?
 - What is each hand/arm doing, specifically and separately (e.g., "left hand rests flat on top of the head", "right arm extends down reaching toward an object")? Do not default to a generic pose. Describe hands and arms independently of each other.
 - What is the facial expression's emotional quality (without describing facial features, ethnicity, or age)?
@@ -532,6 +533,8 @@ Describe lens feeling and depth of field only if it is visually evident.
 Preserve the reference crop tightness exactly — do not turn a tight, close crop into a wide establishing shot, and do not turn a wide shot into a tight crop.
 
 [SUBJECT ACTION]
+State explicitly which surface each major body part rests on (torso, hips, legs, knees, feet — floor, sofa seat cushion, sofa arm, etc.). If the body is fully draped, lying, or resting on top of the furniture rather than on the floor, say so explicitly and do not default to a floor-kneeling pose.
+State explicitly which side of the frame the head/hair is on (image-left or image-right) and which side the legs/lower body extend toward, matching the reference exactly per the LEFT/RIGHT RULE.
 Describe the body direction/orientation, head tilt, and gaze target exactly as observed.
 Describe what each hand and arm is doing, independently, using specific verbs (resting, reaching, gripping, dangling, pressing, cradling).
 Describe the facial expression's emotional quality only (calm, playful, focused, distant, etc.) without describing facial features.
@@ -551,6 +554,8 @@ List what must not change.
 Include hairstyle failures, wrong pose, wrong gaze direction, wrong camera angle/distance, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
 Always include: do not convert a tight, minimal-background crop into a wide full-room establishing shot, or vice versa.
 Always include: do not change an open book to a closed book or a closed book to an open book.
+Always include: do not move the body's support surface — if the reference shows the body draped or lying on the furniture, do not place the body kneeling or standing on the floor instead, and vice versa.
+Always include: do not mirror or flip the left/right body orientation from the reference.
 Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
 Include object lock only if an object is present in [OBJECT].
 `;
