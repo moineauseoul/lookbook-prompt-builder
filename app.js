@@ -579,6 +579,7 @@ Explain the color harmony briefly through prompt lines.
 [NEGATIVE LOCKS]
 List what must not change.
 Include hairstyle failures, wrong pose, wrong gaze direction, wrong camera angle/distance, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
+If a fixed hairstyle preset is being used, restate its 2-3 most distinctive [HAIR LOCKS] facts here verbatim as well (for example, if the preset is wavy/curly, explicitly state again here: do not render straight or sleek hair, do not tie it into any bun/half-up/ponytail). This repetition is intentional — texture/structure (straight vs. curly, tied vs. down) is the attribute most likely to silently revert to the reference image's own hair, so it needs to be stated in both [HAIR] and [NEGATIVE LOCKS].
 Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
 Include object lock only if an object is present in [OBJECT].
 Always include: do not convert a tight, minimal-background crop into a wide full-room establishing shot, or vice versa.
