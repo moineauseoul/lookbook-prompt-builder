@@ -433,51 +433,44 @@ Always dress the subject in a fixed ivory look:
     let p = `You are not writing a caption.
 You are reverse-engineering the reference image into an image-generation design blueprint.
 
-FIRST, silently identify:
-- What creates the mood of the image.
-- What story moment is being photographed.
-- Which elements must never change for the result to feel like the same lookbook image.
-- Which elements are merely incidental and should stay quiet.
+Your single most important job is to make the CAMERA and the SUBJECT ACTION (pose, gaze, head tilt, expression, hand/arm placement) match the reference as closely as physically describable in words. Everything else (scene, lighting, color) is secondary to this.
 
-Then output the final prompt in English only.
+FIRST, silently look at the reference image and answer these questions to yourself before writing anything:
+- Where exactly is the camera relative to the subject? (above/eye-level/below, straight-on or angled, how far, what portion of the body is included)
+- Where is the subject positioned in the frame (centered, left, right, upper, lower) and how is the frame cropped (which body parts are cut off by the edge)?
+- What is the subject's body doing (lying, sitting, leaning, reclining, standing, twisting) and in which direction is the torso/shoulders facing?
+- Where exactly is the head tilted and where is the gaze pointed (at a specific object, down, away, at camera, at own hands)?
+- What is each hand/arm doing, specifically and separately (e.g., "left hand rests flat on top of the head", "right arm extends down reaching toward an object")? Do not default to a generic pose. Describe hands and arms independently of each other.
+- What is the facial expression's emotional quality (without describing facial features, ethnicity, or age)?
+- Is there an object being interacted with (book, bag, cup, phone, glasses, etc.)? If so, describe exactly how it is held, touched, or approached — do not assume it is a bag.
+
+Then output the final prompt in English only, using only what you actually observed above.
 Do not mention your analysis process.
+Do not import assumptions about pose, gaze, or object-handling from outside this specific image — describe only this image.
 
 CRITICAL PRIORITY ORDER:
-1. Preserve the creative direction, emotion, and story moment.
-2. Preserve the locked hairstyle exactly.
-3. Preserve the reference camera framing, crop tightness, subject placement, and composition.
-4. Preserve the bag height, bag scale, and hand/forearm relationship to the bag.
-5. Force the fixed ivory long-sleeve shirt and ivory shorts outfit, regardless of the reference outfit.
-6. Preserve the scene, lighting, color language, and textures.
+1. Preserve the exact camera framing, crop tightness, camera angle/height, and subject placement.
+2. Preserve the exact pose: body direction, head tilt, gaze target, and independent hand/arm actions.
+3. Preserve the locked hairstyle exactly.
+4. Force the fixed ivory long-sleeve shirt and ivory shorts outfit, regardless of the reference outfit.
+5. Preserve the scene, lighting, color language, and textures.
+6. If an object (bag, book, cup, etc.) is part of the pose, preserve its exact role, scale, and hand relationship — but never invent a bag if none is present.
 
 LEFT/RIGHT RULE:
 Use image left and image right from the viewer's perspective.
-Before writing face direction, hand position, or bag position, check where the nose, gaze, shoulders, and bag sit in the image.
+Before writing face direction, hand position, or object position, check where the nose, gaze, shoulders, and hands actually sit in the image.
 Do not mirror the image.
 
 REFERENCE EXTRACTION RULES:
-- Keep color language. Include clothing colors, bag color, wall/window/wood colors, skin tone only if needed for identity consistency, and overall palette.
-- Keep texture language. Include knit, leather, plaster, wood, glass, foliage, film grain, softness, and surface finish when visible.
+- Keep color language. Include clothing colors, held-object color, wall/window/wood/fabric colors, and overall palette.
+- Keep texture language. Include knit, leather, plaster, wood, glass, fabric weave, film grain, softness, and surface finish when visible.
 - Do not over-inventory the background. Describe only the scene elements that shape the mood or composition.
-- Do not replace the photographed moment with a generic product pose.
-- If the subject is looking down, away, or toward the bag, state that clearly.
-- The bag must remain visually important and close to the torso. Preserve it as a substantial body-held object, not a small accessory.
-- Describe the bag as occupying between one-third and two-fifths of the frame width when the reference composition supports a tight portrait.
-- Preserve the vertical placement of the bag from the reference. If the reference bag rises to the upper chest, keep it high on the torso.
-- Do not lower the bag to the waist or hip unless the reference does.
-- Preserve the reference crop. Do not widen the image to show the outfit, shorts, legs, or more empty wall.
-- If the reference is a tight upper-body portrait, keep the output as a tight upper-body portrait.
-- If the bag is held close, supported, gripped, or resting against the body, state the exact relationship without making it look squeezed.
-- Use "held close but not squeezed" instead of "hugged tightly".
-- If the reference shows one hand resting flat across or just above the top handle, preserve that hand as a bag-contact gesture, not a face gesture.
-- Preserve asymmetry in the hands when visible: one hand flat across the top handle or upper edge, the other forearm supporting the lower body of the bag.
-- Hand-to-face gestures are prohibited unless the reference unmistakably shows actual contact with the mouth, lips, or chin.
-- If the hand position is ambiguous, choose bag contact over face contact.
-- Do not write "hand near mouth", "knuckles near lips", "fingers touching chin", or "contemplative hand-to-face gesture" unless the hand clearly touches the face in the reference.
-- Prefer hands and forearms supporting, lightly gripping, resting over, or wrapping around the bag without compressing it.
+- Do not replace the photographed moment with a generic pose. If the pose is unusual (reclining, twisting, reaching, looking away), describe it exactly as unusual.
+- Never assume a bag is present. Only describe an object if it is visibly held, touched, or resting near the subject in the reference.
+- Describe hand and arm positions independently and specifically — do not default to "hand near face" or "hand on bag" templates. Say exactly what each hand is doing and where.
 - Avoid approximate numbers unless a numeric angle is genuinely useful. Prefer plain precise language over fake precision.
 - Do not describe facial features, ethnicity, or age.
-- Use negative locks for common generation failures, especially hairstyle, bag scale, pose, gaze, and framing.
+- Use negative locks for common generation failures, especially hairstyle, pose drift, gaze drift, and framing/crop drift.
 
 OUTPUT FORMAT:
 Use these exact section headers and order.
@@ -495,37 +488,29 @@ ${hairSection}
 [OUTFIT]
 ${fixedOutfit}
 
-[BAG]
-If a bag is visible, describe the exact bag category, color, material finish, silhouette, handle/strap structure, and how it is held against the body.
-Make the bag large enough to read as a key object in the image, not a small purse.
-Preserve a substantial but not oversized torso-held scale: the bag should cover a clear central area of the torso and occupy between one-third and two-fifths of the frame width in tight portraits.
-Preserve the reference bag height. If the reference bag sits high against the chest and upper stomach, keep it there.
-Describe the bag as held close but not squeezed, supported from below, or resting against the chest/upper stomach when the reference supports that relationship.
-If visible in the reference, keep one hand resting horizontally and lightly across or over the top handle while the opposite forearm supports the lower body of the bag.
-Include hand placement and support points only when visible or when needed to prevent hand-to-face drift.
-If no bag is visible, write: None.
+[OBJECT]
+If the subject is holding, touching, or interacting with any object (bag, book, cup, glasses, etc.), describe exactly what it is, its color/material, its scale relative to the body, and precisely how it is held or touched.
+If no object is present or relevant, write: None.
 
 [SCENE]
 Describe the mood-setting location and composition.
-Include only important structural elements, background depth, window/opening relationship, and environmental details.
+Include only important structural elements, background depth, window/opening relationship, key furniture, and environmental details.
 Include colors and material textures when they are part of the atmosphere.
 
 [CAMERA]
 Aspect ratio: ${ratio}.
-Describe framing, crop points, distance, lens feeling, angle, depth of field, subject placement, headroom, and how much of the body is visible.
-Preserve the reference crop tightness exactly.
-If the reference crop is upper-body only, do not widen to show shorts, thighs, full body, or extra wall.
-If the bag is central in the lower half of the reference, keep the bag central and fully visible in the lower half.
+State the camera height/angle relative to the subject (e.g., high angle looking down, eye level, low angle looking up).
+State the camera distance (close-up, medium, full-body) and exactly how much of the body is in frame.
+State where the subject is placed in the frame and which edges of the frame crop the body or scene.
+Describe lens feeling and depth of field only if it is visually evident.
+Preserve the reference crop tightness exactly. Do not widen or narrow it.
 
 [SUBJECT ACTION]
-Describe the story moment, body direction, head tilt, gaze direction, expression, shoulders, arms, hands, and the subject's relationship to the bag.
-Make the pose feel motivated, not mechanical.
-Direct the gaze downward toward the bag area or the lower side of the frame, not straight ahead.
-Keep hands away from the mouth, lips, and chin unless the reference unmistakably shows contact.
-When in doubt, place both hands/forearms on the bag: one supporting from below and one resting over or around the handle/body.
-Preserve the reference hand architecture: one forearm beneath the bag, one hand resting flat over the top handle or upper edge when visible.
-Keep the top hand relaxed and flat, not clenched, not gripping hard, not wrapping around the full bag.
-Do not convert the pose into a standing product-catalog hold with one arm hanging down.
+Describe the body direction/orientation, head tilt, and gaze target exactly as observed.
+Describe what each hand and arm is doing, independently, using specific verbs (resting, reaching, gripping, dangling, pressing, cradling).
+Describe the facial expression's emotional quality only (calm, playful, focused, distant, etc.) without describing facial features.
+Make the pose feel motivated by the story moment, not mechanical.
+Do not force a downward gaze, a hand-to-bag position, or any other template pose that is not actually visible in the reference.
 
 [LIGHTING]
 Describe light source, direction, softness, shadow contrast, highlights, and time-of-day feeling when visible.
@@ -537,12 +522,9 @@ Explain the color harmony briefly through prompt lines.
 
 [NEGATIVE LOCKS]
 List what must not change.
-Include hairstyle failures, wrong bag size/color/handling, wrong gaze, wrong pose, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
-Always include: no hand near mouth, no fingers touching lips, no chin-touch pose, no contemplative hand-to-face gesture.
-Always include: do not shrink the bag, do not oversize the bag, do not make it a small clutch, do not let it dangle from the handle, do not crop it out.
-Always include: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
-Always include: do not widen the crop to reveal shorts or legs when the reference is a tight portrait.
-Always include: do not lower the bag to the waist, do not squeeze the bag tightly, do not make one arm hang straight down, do not turn the pose into a catalog standing pose.
+Include hairstyle failures, wrong pose, wrong gaze direction, wrong camera angle/distance, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
+Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
+Include object lock only if an object is present in [OBJECT].
 `;
     if (note) {
       p += `\nAdditional direction: ${note}\n`;
@@ -687,39 +669,36 @@ ${confirmedBase.text}
 """
 
 Generate individual cut prompts for the cuts listed below.
-Each cut must feel like the same brand shoot, same reference atmosphere, and same design logic, but with a new camera/pose purpose.
+Each cut must feel like the same brand shoot, same reference atmosphere, and same design logic, but with a new camera/pose purpose described by the cut name.
 
 Do not make a generic catalog pose.
-Keep the quiet story moment, color language, texture, bag identity, outfit identity, and lighting behavior from the base.
+Keep the quiet story moment, color language, texture, object identity (if any), outfit identity, and lighting behavior from the base.
 
 FIXED ACROSS ALL CUTS:
 - [MASTER DIRECTION]: preserve the base creative direction, emotion, and story moment.
 - [HAIR]: use this exact fixed hairstyle and negative locks: "${hairSection}"
 - [OUTFIT]: always use this fixed outfit: "${fixedOutfit}"
-- [BAG]: preserve the base bag identity, color, material finish, substantial but not oversized torso-held scale, high torso placement, and the feeling of how it is held close but not squeezed unless a cut is explicitly about no bag.
+- [OBJECT]: preserve the base object identity (if any) — its color, material, scale — unless the cut name explicitly changes or removes it.
 - [SCENE]: preserve the same location, atmosphere, color relationship, and mood-setting architectural/background elements.
 - [LIGHTING]: preserve the same light source, softness, direction, contrast, and time-of-day feeling.
 - [COLOR & TEXTURE]: preserve the base palette relationship and tactile qualities.
 - [NEGATIVE LOCKS]: keep all relevant base locks and add cut-specific locks when needed.
 
 VARIABLE PER CUT:
-- [CAMERA]: change framing, crop, distance, angle, subject placement, and depth of field to match the cut name. Always begin with "Aspect ratio: X:X."
-- [SUBJECT ACTION]: change body direction, gaze, hand/arm placement, and bag interaction to match the cut name while staying natural and motivated. Keep the gaze downward toward the bag area or lower frame when the cut is based on the reference mood. Keep hands away from mouth, lips, and chin unless the base explicitly requires face contact. Preserve bag-contact hand architecture whenever the cut is a bag-focused crop.
-- [BAG]: if the cut changes how the bag appears, describe the new grip/support/wear relationship precisely while preserving bag identity and substantial but not oversized torso-held scale.
+- [CAMERA]: change camera height/angle, distance, framing, crop, subject placement, and depth of field to match what the cut name literally asks for. Always begin with "Aspect ratio: X:X."
+- [SUBJECT ACTION]: change body direction, head tilt, gaze target, and independent hand/arm placement to match the cut name, while staying natural and motivated by the base story moment. Do not force a generic downward gaze or hand-to-object template unless the cut name specifically calls for it. Describe each hand/arm independently.
+- [OBJECT]: if the cut changes how the object appears or interacts with the pose, describe the new grip/support/placement precisely.
 
 RULES:
 - Use the exact section structure below for every cut:
-  [MASTER DIRECTION], [HAIR], [OUTFIT], [BAG], [SCENE], [CAMERA], [SUBJECT ACTION], [LIGHTING], [COLOR & TEXTURE], [NEGATIVE LOCKS]
+  [MASTER DIRECTION], [HAIR], [OUTFIT], [OBJECT], [SCENE], [CAMERA], [SUBJECT ACTION], [LIGHTING], [COLOR & TEXTURE], [NEGATIVE LOCKS]
 - Write in English only.
 - Use short prompt lines.
 - Do not mention facial features, ethnicity, or age.
 - Do not add jewelry, extra accessories, extra furniture, extra people, logos, or editorial exaggeration unless present in the base.
-- Do not create hand-to-face gestures, fingers touching lips, chin-touch poses, or a contemplative hand near the mouth.
-- Do not shrink the bag into a small purse or clutch. Keep it visibly important and close to the body.
-- Do not oversize the bag into a dominant product close-up unless the cut explicitly asks for a detail shot.
+- Do not invent hand-to-face gestures, an object, or a pose that isn't implied by the base or the cut name.
 - Do not change the fixed ivory long-sleeve shirt and ivory shorts outfit.
-- Do not widen tight portrait crops just to show shorts or legs.
-- Do not lower the bag to the waist or turn the pose into a catalog hold.
+- Do not widen tight portrait crops just to show shorts or legs unless the cut name is a full-body cut.
 - Use image left/image right from the viewer's perspective when describing direction.
 
 컷 리스트:
@@ -728,7 +707,7 @@ ${cutListText}
 Respond ONLY with the following JSON (no markdown fences, no text outside the JSON):
 {
   "cuts": [
-    { "name": "컷 이름 그대로", "prompt": "[MASTER DIRECTION]\\n...\\n\\n[HAIR]\\n...\\n\\n[OUTFIT]\\n...\\n\\n[BAG]\\n...\\n\\n[SCENE]\\n...\\n\\n[CAMERA]\\nAspect ratio: X:X.\\n...\\n\\n[SUBJECT ACTION]\\n...\\n\\n[LIGHTING]\\n...\\n\\n[COLOR & TEXTURE]\\n...\\n\\n[NEGATIVE LOCKS]\\n..." }
+    { "name": "컷 이름 그대로", "prompt": "[MASTER DIRECTION]\\n...\\n\\n[HAIR]\\n...\\n\\n[OUTFIT]\\n...\\n\\n[OBJECT]\\n...\\n\\n[SCENE]\\n...\\n\\n[CAMERA]\\nAspect ratio: X:X.\\n...\\n\\n[SUBJECT ACTION]\\n...\\n\\n[LIGHTING]\\n...\\n\\n[COLOR & TEXTURE]\\n...\\n\\n[NEGATIVE LOCKS]\\n..." }
   ]
 }`;
   }
