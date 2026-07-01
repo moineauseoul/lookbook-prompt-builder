@@ -474,13 +474,21 @@ Then output the final prompt in English only, using only what you actually obser
 Do not mention your analysis process.
 Do not import assumptions about pose, gaze, or object-handling from outside this specific image — describe only this image.
 
-CRITICAL PRIORITY ORDER:
-1. Preserve the exact camera framing, crop tightness, camera angle/height, and subject placement.
-2. Preserve the exact pose: body direction, head tilt, gaze target, and independent hand/arm actions.
-3. Preserve the locked hairstyle exactly.
-4. Force the fixed ivory long-sleeve shirt and ivory shorts outfit, regardless of the reference outfit.
-5. Preserve the scene, lighting, color language, and textures.
-6. If an object (bag, book, cup, etc.) is part of the pose, preserve its exact role, scale, and hand relationship — but never invent a bag if none is present.
+CRITICAL PRIORITY ORDER — SINGLE ANCHOR RULE:
+Image generation from this prompt tends to fail when too many unusual pose/camera elements are demanded at once — it reverts to a generic default pose instead of honoring any of them. To prevent this, treat these as two tiers:
+
+TIER 1 — NON-NEGOTIABLE (this is the one thing that must survive no matter what):
+- The independent division of labor between the two hands/arms if one hand touches the subject's own head/hair while the other hand touches or reaches toward a separate object. This exact two-hand split must be preserved. This is the single most important fact in the entire prompt.
+
+TIER 2 — STRONG PREFERENCE, NOT AN ABSOLUTE LOCK (describe clearly, but do not stack multiple TIER 2 negative locks that fight each other):
+- Camera angle/height.
+- Which surface the body rests on (floor vs. furniture) and torso lean direction.
+- Locked hairstyle.
+- Fixed ivory long-sleeve shirt and ivory shorts outfit.
+- Scene, lighting, color language, and textures.
+- Object identity, scale, and role (but never invent a bag if none is present).
+
+When writing [CAMERA] and the body-support/lean parts of [SUBJECT ACTION], describe them clearly and specifically as observed, but do not pile on more than one or two matching negative locks for them — over-specifying every secondary detail as a hard rule is what causes the generation to abandon everything and default to a generic pose.
 
 LEFT/RIGHT RULE:
 Use image left and image right from the viewer's perspective.
@@ -555,19 +563,12 @@ List the essential palette relationships and tactile qualities.
 Explain the color harmony briefly through prompt lines.
 
 [NEGATIVE LOCKS]
-List what must not change.
-Include hairstyle failures, wrong pose, wrong gaze direction, wrong camera angle/distance, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
-Always include: do not convert a tight, minimal-background crop into a wide full-room establishing shot, or vice versa.
-Always include: do not change an open book to a closed book or a closed book to an open book.
-Always include: do not move the body's support surface — if the reference shows the body draped or lying on the furniture, do not place the body kneeling or standing on the floor instead, and vice versa.
-Always include: do not mirror or flip the left/right body orientation from the reference.
-Always include: do not turn a forward, downward-collapsed torso lean into a backward, upright reclining lean, or vice versa.
-Always include: do not turn a downward gaze toward an object into an averted or upward gaze away from it, or vice versa.
-Always include: do not turn a near-overhead camera angle into an eye-level or moderate angle, or vice versa.
-Always include: do not merge a one-hand-on-head-plus-one-hand-on-object pose into a two-hands-on-the-same-object pose.
-Always include: do not turn a diagonally reclining, stretched-out body into an upright, legs-bent-or-crossed seated pose, or vice versa.
-Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
-Include object lock only if an object is present in [OBJECT].
+Write no more than 6-8 lines total. Prioritize in this order:
+1. The TIER 1 anchor: do not merge the one-hand-on-head plus one-hand-on-object pose into a two-hands-on-the-same-object pose, or drop the head-touching hand entirely. This line must always be included and stated first.
+2. Outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
+3. Hairstyle lock.
+4. At most 2-3 additional locks for the most distinctive TIER 2 facts in this specific reference (camera angle, body support surface, or object state) — pick only the ones most at risk of being lost, not all of them.
+Do not list every possible failure mode. A long list of equally weighted negative locks is counterproductive here.
 `;
     if (note) {
       p += `\nAdditional direction: ${note}\n`;
