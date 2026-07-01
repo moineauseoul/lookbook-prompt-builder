@@ -459,6 +459,7 @@ Your single most important job is to make the CAMERA and the SUBJECT ACTION (pos
 FIRST, silently look at the reference image and answer these questions to yourself before writing anything:
 - Where exactly is the camera relative to the subject? (above/eye-level/below, straight-on or angled, how far, what portion of the body is included)
 - Where is the subject positioned in the frame (centered, left, right, upper, lower) and how is the frame cropped (which body parts are cut off by the edge)?
+- Roughly how much of the frame does the subject's body occupy, and how much visible background/negative space surrounds them? Is this a tight, intimate crop or a wide, room-showing shot?
 - What is the subject's body doing (lying, sitting, leaning, reclining, standing, twisting) and in which direction is the torso/shoulders facing?
 - Where exactly is the head tilted and where is the gaze pointed (at a specific object, down, away, at camera, at own hands)?
 - What is each hand/arm doing, specifically and separately (e.g., "left hand rests flat on top of the head", "right arm extends down reaching toward an object")? Do not default to a generic pose. Describe hands and arms independently of each other.
@@ -511,6 +512,8 @@ ${fixedOutfit}
 
 [OBJECT]
 If the subject is holding, touching, or interacting with any object (bag, book, cup, glasses, etc.), describe exactly what it is, its color/material, its scale relative to the body, and precisely how it is held or touched.
+If the object is a book, state explicitly whether it is open (pages visible) or closed (cover visible, spine/title visible), and describe its exact orientation and which surface it rests on or is being reached toward.
+Describe the exact point of contact: which specific fingers or part of the hand touches the object, and whether the hand is already resting on it or is mid-reach toward it.
 If no object is present or relevant, write: None.
 
 [SCENE]
@@ -520,11 +523,13 @@ Include colors and material textures when they are part of the atmosphere.
 
 [CAMERA]
 Aspect ratio: ${ratio}.
-State the camera height/angle relative to the subject (e.g., high angle looking down, eye level, low angle looking up).
-State the camera distance (close-up, medium, full-body) and exactly how much of the body is in frame.
+State the camera height/angle relative to the subject (e.g., high angle looking down, eye level, low angle looking up, near-overhead bird's-eye).
+State the camera distance (close-up, medium, full-body, wide establishing) and exactly how much of the body is in frame.
+State the subject-to-frame occupancy: how much of the frame height/width the subject's body actually fills (for example, "the body fills nearly the full frame diagonally, leaving almost no background visible" versus "the subject is small within a wide room view with generous space around them"). Get this line right before anything else in this section.
+State how much environment/background is visible around the subject as a direct consequence of that occupancy — a tight crop shows almost no room; a wide shot shows most of the room.
 State where the subject is placed in the frame and which edges of the frame crop the body or scene.
 Describe lens feeling and depth of field only if it is visually evident.
-Preserve the reference crop tightness exactly. Do not widen or narrow it.
+Preserve the reference crop tightness exactly — do not turn a tight, close crop into a wide establishing shot, and do not turn a wide shot into a tight crop.
 
 [SUBJECT ACTION]
 Describe the body direction/orientation, head tilt, and gaze target exactly as observed.
@@ -544,6 +549,8 @@ Explain the color harmony briefly through prompt lines.
 [NEGATIVE LOCKS]
 List what must not change.
 Include hairstyle failures, wrong pose, wrong gaze direction, wrong camera angle/distance, wrong crop, extra accessories, extra subjects, and over-styled editorial exaggeration.
+Always include: do not convert a tight, minimal-background crop into a wide full-room establishing shot, or vice versa.
+Always include: do not change an open book to a closed book or a closed book to an open book.
 Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
 Include object lock only if an object is present in [OBJECT].
 `;
@@ -706,7 +713,7 @@ FIXED ACROSS ALL CUTS:
 - [NEGATIVE LOCKS]: keep all relevant base locks and add cut-specific locks when needed.
 
 VARIABLE PER CUT:
-- [CAMERA]: change camera height/angle, distance, framing, crop, subject placement, and depth of field to match what the cut name literally asks for. Always begin with "Aspect ratio: X:X."
+- [CAMERA]: change camera height/angle, distance, framing, crop, subject-to-frame occupancy, subject placement, and depth of field to match what the cut name literally asks for. State explicitly how much of the frame the subject's body fills for this specific cut. Always begin with "Aspect ratio: X:X."
 - [SUBJECT ACTION]: change body direction, head tilt, gaze target, and independent hand/arm placement to match the cut name, while staying natural and motivated by the base story moment. Do not force a generic downward gaze or hand-to-object template unless the cut name specifically calls for it. Describe each hand/arm independently.
 - [OBJECT]: if the cut changes how the object appears or interacts with the pose, describe the new grip/support/placement precisely.
 
