@@ -462,6 +462,7 @@ FIRST, silently look at the reference image and answer these questions to yourse
 - Roughly how much of the frame does the subject's body occupy, and how much visible background/negative space surrounds them? Is this a tight, intimate crop or a wide, room-showing shot?
 - What is the subject's body doing (lying, sitting, leaning, reclining, standing, twisting) and in which direction is the torso/shoulders facing?
 - Which surface is each part of the subject's body actually resting on — the floor, the sofa seat, the sofa arm, a cushion? Is the entire body (torso, hips, legs) elevated onto the furniture, or does part of the body touch the ground? Do not assume a floor-kneeling pose if the reference shows the body draped or lying across furniture.
+- Does the torso lean forward and downward, as if collapsing, flopping, or draping down toward a surface — or does it lean backward and upward, as if reclining and relaxing against a backrest? These are opposite directions and easy to confuse; pick the one that is actually shown. The head tilt and gaze target must be consistent with this lean direction (a forward-downward lean usually pairs with a downward gaze toward whatever the lower hand is doing, not an averted or upward gaze).
 - Where exactly is the head tilted and where is the gaze pointed (at a specific object, down, away, at camera, at own hands)?
 - What is each hand/arm doing, specifically and separately (e.g., "left hand rests flat on top of the head", "right arm extends down reaching toward an object")? Do not default to a generic pose. Describe hands and arms independently of each other.
 - What is the facial expression's emotional quality (without describing facial features, ethnicity, or age)?
@@ -524,7 +525,7 @@ Include colors and material textures when they are part of the atmosphere.
 
 [CAMERA]
 Aspect ratio: ${ratio}.
-State the camera height/angle relative to the subject (e.g., high angle looking down, eye level, low angle looking up, near-overhead bird's-eye).
+State the camera height/angle relative to the subject as one of three bands, chosen carefully: (1) near-overhead bird's-eye — camera is almost directly above, looking nearly straight down; (2) moderately elevated — camera is above and angled down at roughly 30-45 degrees; (3) eye level or low angle. Do not default to eye level or a moderate angle if the reference is closer to near-overhead.
 State the camera distance (close-up, medium, full-body, wide establishing) and exactly how much of the body is in frame.
 State the subject-to-frame occupancy: how much of the frame height/width the subject's body actually fills (for example, "the body fills nearly the full frame diagonally, leaving almost no background visible" versus "the subject is small within a wide room view with generous space around them"). Get this line right before anything else in this section.
 State how much environment/background is visible around the subject as a direct consequence of that occupancy — a tight crop shows almost no room; a wide shot shows most of the room.
@@ -534,6 +535,7 @@ Preserve the reference crop tightness exactly — do not turn a tight, close cro
 
 [SUBJECT ACTION]
 State explicitly which surface each major body part rests on (torso, hips, legs, knees, feet — floor, sofa seat cushion, sofa arm, etc.). If the body is fully draped, lying, or resting on top of the furniture rather than on the floor, say so explicitly and do not default to a floor-kneeling pose.
+State explicitly whether the torso's lean direction is forward-and-downward (collapsing/draping toward a surface) or backward-and-upward (reclining against a backrest). Confirm the head tilt and gaze target match that lean direction. Do not substitute a backward-reclining, gazing-away pose for a forward, downward-collapsed pose, or vice versa.
 State explicitly which side of the frame the head/hair is on (image-left or image-right) and which side the legs/lower body extend toward, matching the reference exactly per the LEFT/RIGHT RULE.
 Describe the body direction/orientation, head tilt, and gaze target exactly as observed.
 Describe what each hand and arm is doing, independently, using specific verbs (resting, reaching, gripping, dangling, pressing, cradling).
@@ -556,6 +558,9 @@ Always include: do not convert a tight, minimal-background crop into a wide full
 Always include: do not change an open book to a closed book or a closed book to an open book.
 Always include: do not move the body's support surface — if the reference shows the body draped or lying on the furniture, do not place the body kneeling or standing on the floor instead, and vice versa.
 Always include: do not mirror or flip the left/right body orientation from the reference.
+Always include: do not turn a forward, downward-collapsed torso lean into a backward, upright reclining lean, or vice versa.
+Always include: do not turn a downward gaze toward an object into an averted or upward gaze away from it, or vice versa.
+Always include: do not turn a near-overhead camera angle into an eye-level or moderate angle, or vice versa.
 Include outfit lock: no outfit changes from the fixed ivory long-sleeve shirt and ivory shorts.
 Include object lock only if an object is present in [OBJECT].
 `;
